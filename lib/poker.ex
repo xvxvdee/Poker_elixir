@@ -160,16 +160,64 @@ defmodule Poker do
     b = Enum.count(hd(tl(lst)))
     cond1 = a == 2 and b == 3
     cond2 = a == 3 and b == 2
-    IO.puts(a)
-    IO.puts(b)
+    # IO.puts(a)
+    # IO.puts(b)
     cond1 or cond2
+  end
+
+  def straight(hand) do
+
+  end
+
+  def threeOfAKind(hand) do
+    lst = Enum.sort(hand)
+    lst = Enum.chunk_by(lst, fn x -> x end)
+    lst = Enum.sort_by(lst, &length/1, :desc)
+    a = Enum.count(hd(lst))
+    b = Enum.count(hd(tl(lst)))
+    cond1 = a == 3 and b == 1
+    # IO.puts(a)
+    # IO.puts(b)
+    cond1
+  end
+
+  def twoPair(hand) do
+    lst = Enum.sort(hand)
+    lst = Enum.chunk_by(lst, fn x -> x end)
+    lst = Enum.sort_by(lst, &length/1, :desc)
+    a = Enum.count(hd(lst))
+    b = Enum.count(hd(tl(lst)))
+    # IO.puts(a)
+    # IO.puts(b)
+    a == 2 and b == 2
+  end
+
+  def pair(hand) do
+    lst = Enum.sort(hand)
+    lst = Enum.chunk_by(lst, fn x -> x end)
+    lst = Enum.sort_by(lst, &length/1, :desc)
+    a = Enum.count(hd(lst))
+    b = Enum.count(hd(tl(lst)))
+    # IO.puts(a)
+    # IO.puts(b)
+    a == 2 and b == 1
+  end
+
+  def highCard(hand) do
+    lst = Enum.sort(hand)
+    lst = Enum.reverse(lst)
+    hd(lst)
   end
 end
 
 # IO.puts(Poker.checkNum(28))
 # IO.puts(Poker.checkSequenceV1([2,2,2,1,1]))
-IO.puts(Poker.fullHouse([10, 23, 36, 1, 14]))
+# IO.puts(Poker.fullHouse([10, 23, 36, 1, 14]))
 # IO.puts(Poker.fullHouse([10,23,33,1,14]))
 # IO.puts(Poker.sameSuit([5,6,7,8,9]))
 # IO.puts(Poker.straightFlush([1,2,3,4,5]))
 # IO.puts(Poker.fourOfAKind([14, 15, 16, 17, 1]))
+IO.puts(Poker.threeOfAKind([11, 11, 11, 17, 4]))
+IO.puts(Poker.twoPair([14, 14, 16, 16, 1]))
+IO.puts(Poker.pair([14, 14, 16, 17, 1]))
+IO.puts(Poker.highCard([14, 15, 16, 17, 1]))
