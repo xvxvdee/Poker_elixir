@@ -77,8 +77,14 @@ defmodule Poker do
   # Check hand without Ace in the middle of it
   def checkSequenceV1(hand) do
     lst = handToNum(hand)
-    sorted = Enum.sort(lst)
-    lst == sorted
+    temp = Enum.chunk_every(lst,2, 1, :discard)
+    check = for x <- temp, do: hd(tl(x))-hd(x)
+    set = MapSet.new(check)
+    len = String.length(Enum.join(set, ""))
+    len == 1 and 1 in set
+    # set  |> inspect(charlists: :as_lists)
+    # sorted = Enum.sort(lst)
+    # lst == sorted
   end
 
   # Check hand with Ace in the middle of it
@@ -165,9 +171,9 @@ defmodule Poker do
     cond1 or cond2
   end
 
-  def straight(hand) do
+  # def straight(hand) do
 
-  end
+  # end
 
   def threeOfAKind(hand) do
     lst = Enum.sort(hand)
@@ -211,13 +217,13 @@ defmodule Poker do
 end
 
 # IO.puts(Poker.checkNum(28))
-# IO.puts(Poker.checkSequenceV1([2,2,2,1,1]))
+IO.puts(Poker.checkSequenceV1([1,2,3,7,8]))
 # IO.puts(Poker.fullHouse([10, 23, 36, 1, 14]))
 # IO.puts(Poker.fullHouse([10,23,33,1,14]))
 # IO.puts(Poker.sameSuit([5,6,7,8,9]))
-# IO.puts(Poker.straightFlush([1,2,3,4,5]))
+#  IO.puts(Poker.straightFlush([1,4,3,2,5]))
 # IO.puts(Poker.fourOfAKind([14, 15, 16, 17, 1]))
-IO.puts(Poker.threeOfAKind([11, 11, 11, 17, 4]))
-IO.puts(Poker.twoPair([14, 14, 16, 16, 1]))
-IO.puts(Poker.pair([14, 14, 16, 17, 1]))
-IO.puts(Poker.highCard([14, 15, 16, 17, 1]))
+# IO.puts(Poker.threeOfAKind([11, 11, 11, 17, 4]))
+# IO.puts(Poker.twoPair([14, 14, 16, 16, 1]))
+# IO.puts(Poker.pair([14, 14, 16, 17, 1]))
+# IO.puts(Poker.highCard([14, 15, 16, 17, 1]))
