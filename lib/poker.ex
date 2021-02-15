@@ -19,6 +19,28 @@ defmodule Poker do
     ans
   end
 
+  def getHighestRank(hand,remove) do
+    lst = handToNum(hand)
+    lst = lst -- remove
+    high=
+      cond do
+        1 in lst -> 1
+        13 in lst -> 13
+        12 in lst -> 12
+        11 in lst -> 11
+        10 in lst -> 10
+        9 in lst -> 9
+        8 in lst -> 8
+        7 in lst -> 7
+        6 in lst -> 6
+        5 in lst -> 5
+        4 in lst -> 4
+        3 in lst -> 3
+        2 in lst -> 2
+      end
+      high
+  end
+
   def checkNum(num) do
     #Takes any number and returns its value with the range 1-13
     a = num == 1 or num == 14 or num == 27 or num == 40
@@ -82,9 +104,6 @@ defmodule Poker do
     set = MapSet.new(check)
     len = String.length(Enum.join(set, ""))
     len == 1 and 1 in set
-    # set  |> inspect(charlists: :as_lists)
-    # sorted = Enum.sort(lst)
-    # lst == sorted
   end
 
   # Check hand with Ace in the middle of it
@@ -217,7 +236,7 @@ defmodule Poker do
 end
 
 # IO.puts(Poker.checkNum(28))
-IO.puts(Poker.checkSequenceV1([1,2,3,7,8]))
+IO.puts(Poker.getHighestRank([1,2,3,4,5],[6]))
 # IO.puts(Poker.fullHouse([10, 23, 36, 1, 14]))
 # IO.puts(Poker.fullHouse([10,23,33,1,14]))
 # IO.puts(Poker.sameSuit([5,6,7,8,9]))
