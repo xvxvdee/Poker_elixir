@@ -86,12 +86,12 @@ defmodule Poker do
     lst = handToNum(hand)
     temp = Enum.split_while(lst, fn x -> x != 1 end)
     l = Tuple.to_list(temp)
-
+    # IO.inspect(l)
     a = Enum.sort(hd(l))
     b = Enum.sort(hd(tl(l)))
     res = a ++ b
-    # IO.puts(hand |> inspect(charlists: :as_lists))
-    # IO.puts(res |> inspect(charlists: :as_lists))
+    IO.puts(hand |> inspect(charlists: :as_lists))
+    IO.puts(res |> inspect(charlists: :as_lists))
     res == lst
   end
 
@@ -166,7 +166,21 @@ defmodule Poker do
   end
 
   def straight(hand) do
+    # num = handToNum(hand)
+    # seq = checkSequenceV1(num)
+    # seq2 = checkSequenceV2(num)
 
+    # a = hd(num) != 1 and 1 in num
+    # b = a and seq2
+    # c = not a and seq
+
+    # ans =
+    #   cond do
+    #     a == true -> b
+    #     a == false -> c
+    #   end
+
+    # ans
   end
 
   def threeOfAKind(hand) do
@@ -217,7 +231,9 @@ end
 # IO.puts(Poker.sameSuit([5,6,7,8,9]))
 # IO.puts(Poker.straightFlush([1,2,3,4,5]))
 # IO.puts(Poker.fourOfAKind([14, 15, 16, 17, 1]))
-IO.puts(Poker.threeOfAKind([11, 11, 11, 17, 4]))
-IO.puts(Poker.twoPair([14, 14, 16, 16, 1]))
-IO.puts(Poker.pair([14, 14, 16, 17, 1]))
-IO.puts(Poker.highCard([14, 15, 16, 17, 1]))
+# IO.puts(Poker.threeOfAKind([11, 11, 11, 17, 4]))
+# IO.puts(Poker.twoPair([14, 14, 16, 16, 1]))
+# IO.puts(Poker.pair([14, 14, 16, 17, 1]))
+# IO.puts(Poker.highCard([14, 15, 16, 17, 1]))
+IO.puts(Poker.straightFlush([1, 2, 7, 8, 9]))
+# IO.puts(Poker.checkSequenceV2([15, 14, 16, 17, 18]))
