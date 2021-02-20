@@ -98,12 +98,16 @@ defmodule Poker do
 
   # Check hand without Ace in the middle of it
   def checkSequenceV1(hand) do
+    # hand = Enum.sort(hand)
     lst = handToNum(hand)
     temp = Enum.chunk_every(lst,2, 1, :discard)
     check = for x <- temp, do: hd(tl(x))-hd(x)
     set = MapSet.new(check)
     len = String.length(Enum.join(set, ""))
     len == 1 and 1 in set
+    # IO.inspect(temp)
+    # IO.inspect(check)
+    # IO.inspect(len)
   end
 
   # Check hand with Ace in the middle of it
@@ -128,8 +132,8 @@ defmodule Poker do
     b = Enum.count(hd(tl(lst)))
     cond1 = a == 4 and b == 1
     cond2 = a == 1 and b == 4
-    IO.puts(a)
-    IO.puts(b)
+    # IO.puts(a)
+    # IO.puts(b)
     cond1 or cond2
   end
 
@@ -190,29 +194,23 @@ defmodule Poker do
     cond1 or cond2
   end
 
-<<<<<<< HEAD
   def straight(hand) do
-    # num = handToNum(hand)
-    # seq = checkSequenceV1(num)
-    # seq2 = checkSequenceV2(num)
+    num = handToNum(hand)
+    seq = checkSequenceV1(num)
+    seq2 = checkSequenceV2(num)
 
-    # a = hd(num) != 1 and 1 in num
-    # b = a and seq2
-    # c = not a and seq
+    a = hd(num) != 1 and 1 in num
+    b = a and seq2
+    c = not a and seq
 
-    # ans =
-    #   cond do
-    #     a == true -> b
-    #     a == false -> c
-    #   end
+    ans =
+      cond do
+        a == true -> b
+        a == false -> c
+      end
 
-    # ans
+    ans
   end
-=======
-  # def straight(hand) do
-
-  # end
->>>>>>> 45631d9f4703c4b6c74174bf05520fe7f34d70c3
 
   def threeOfAKind(hand) do
     lst = Enum.sort(hand)
@@ -256,7 +254,7 @@ defmodule Poker do
 end
 
 # IO.puts(Poker.checkNum(28))
-IO.puts(Poker.getHighestRank([1,2,3,4,5],[6]))
+# IO.puts(Poker.getHighestRank([1,2,3,4,5],[6]))
 # IO.puts(Poker.fullHouse([10, 23, 36, 1, 14]))
 # IO.puts(Poker.fullHouse([10,23,33,1,14]))
 # IO.puts(Poker.sameSuit([5,6,7,8,9]))
@@ -266,8 +264,5 @@ IO.puts(Poker.getHighestRank([1,2,3,4,5],[6]))
 # IO.puts(Poker.twoPair([14, 14, 16, 16, 1]))
 # IO.puts(Poker.pair([14, 14, 16, 17, 1]))
 # IO.puts(Poker.highCard([14, 15, 16, 17, 1]))
-<<<<<<< HEAD
-IO.puts(Poker.straightFlush([1, 2, 7, 8, 9]))
-# IO.puts(Poker.checkSequenceV2([15, 14, 16, 17, 18]))
-=======
->>>>>>> 45631d9f4703c4b6c74174bf05520fe7f34d70c3
+IO.puts(Poker.straight([7, 8, 9, 10, 11]))
+# IO.puts(Poker.checkSequenceV1([1, 2, 5, 4, 3]))
