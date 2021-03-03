@@ -298,9 +298,62 @@ defmodule Poker do
     end
   end
 
-
-
+  #FullHouse Tie
+  def tie_fullhouse(hand1,hand2,type) do
+    lst1 = handToNum(hand1)
+    lst1 = Enum.chunk_by(lst1, fn x -> x end)
+    lst2 = handToNum(hand2)
+    lst2 = Enum.chunk_by(lst2, fn x -> x end)
+    a = Enum.count(hd(lst1))
+    b = Enum.count(hd(tl(lst1)))
+    c = Enum.count(hd(lst2))
+    d = Enum.count(hd(tl(lst2)))
   
+    if type == 1 do
+      check1 =
+        cond do
+          a==3 -> hd(lst1)
+          b==3 ->(hd(tl(lst1)))
+        end
+        check2 =
+        cond do
+          c==3 -> hd(lst2)
+          d==3 ->(hd(tl(lst2)))
+        end
+      rank =[getHighestRank(check1,[]),getHighestRank(check2,[])]
+      high = getHighestRank(rank,[])
+      if high in check1 do
+        IO.puts(hand1|> inspect(charlists: :as_lists))
+      else
+        IO.puts(hand2|> inspect(charlists: :as_lists))
+      end
+
+    else
+      check1 =
+      cond do
+        a==2 -> hd(lst1)
+        b==2 ->(hd(tl(lst1)))
+      end
+      check2 =
+      cond do
+        c==2 -> hd(lst2)
+        d==2 ->(hd(tl(lst2)))
+      end
+      rank =[getHighestRank(check1,[]),getHighestRank(check2,[])]
+      high = getHighestRank(rank,[])
+      if high in check1 do
+       IO.puts( hand1|> inspect(charlists: :as_lists))
+      else
+       IO.puts( hand2|> inspect(charlists: :as_lists))
+      end 
+    end
+  end
+
+  def tie_flush (hand1,hand2):
+
+  end
+  
+
 end
 
 # IO.puts(Poker.checkNum(28))
@@ -314,5 +367,5 @@ end
 # IO.puts(Poker.twoPair([14, 14, 16, 16, 1]))
 # IO.puts(Poker.pair([14, 14, 16, 17, 1]))
 # IO.puts(Poker.highCard([14, 15, 16, 17, 1]))
-IO.puts(Poker.tie_fourkind([7, 7, 7, 7, 11],[8, 8, 8, 8, 12],2))
+IO.puts(Poker.tie_fullhouse([7, 7, 7, 11, 11],[8, 8, 8, 10, 10],1))
 # IO.puts(Poker.checkSequenceV1([1, 2, 5, 4, 3]))
