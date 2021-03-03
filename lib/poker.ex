@@ -105,9 +105,6 @@ defmodule Poker do
     set = MapSet.new(check)
     len = String.length(Enum.join(set, ""))
     len == 1 and 1 in set
-    # IO.inspect(temp)
-    # IO.inspect(check)
-    # IO.inspect(len)
   end
 
   # Check hand with Ace in the middle of it
@@ -189,8 +186,6 @@ defmodule Poker do
     b = Enum.count(hd(tl(lst)))
     cond1 = a == 2 and b == 3
     cond2 = a == 3 and b == 2
-    # IO.puts(a)
-    # IO.puts(b)
     cond1 or cond2
   end
 
@@ -251,6 +246,61 @@ defmodule Poker do
     lst = Enum.reverse(lst)
     hd(lst)
   end
+
+  #Tie methods
+  def tie_fourkind(hand1,hand2,type) do
+    lst1 = handToNum(hand1)
+    lst1 = Enum.chunk_by(lst1, fn x -> x end)
+    lst2 = handToNum(hand2)
+    lst2 = Enum.chunk_by(lst2, fn x -> x end)
+    a = Enum.count(hd(lst1))
+    b = Enum.count(hd(tl(lst1)))
+    c = Enum.count(hd(lst2))
+    d = Enum.count(hd(tl(lst2)))
+  
+    if type == 1 do
+      check1 =
+        cond do
+          a==4 -> hd(lst1)
+          b==4 ->(hd(tl(lst1)))
+        end
+        check2 =
+        cond do
+          c==4 -> hd(lst2)
+          d==4 ->(hd(tl(lst2)))
+        end
+      rank =[getHighestRank(check1,[]),getHighestRank(check2,[])]
+      high = getHighestRank(rank,[])
+      if high in check1 do
+        hand1
+      else
+        hand2
+      end
+
+    else
+      check1 =
+      cond do
+        a==1 -> hd(lst1)
+        b==1 ->(hd(tl(lst1)))
+      end
+      check2 =
+      cond do
+        c==1 -> hd(lst2)
+        d==1 ->(hd(tl(lst2)))
+      end
+      rank =[getHighestRank(check1,[]),getHighestRank(check2,[])]
+      high = getHighestRank(rank,[])
+      if high in check1 do
+        hand1
+      else
+        hand2
+      end 
+    end
+  end
+
+
+
+  
 end
 
 # IO.puts(Poker.checkNum(28))
@@ -264,5 +314,5 @@ end
 # IO.puts(Poker.twoPair([14, 14, 16, 16, 1]))
 # IO.puts(Poker.pair([14, 14, 16, 17, 1]))
 # IO.puts(Poker.highCard([14, 15, 16, 17, 1]))
-IO.puts(Poker.straight([7, 8, 9, 10, 11]))
+IO.puts(Poker.tie_fourkind([7, 7, 7, 7, 11],[8, 8, 8, 8, 12],2))
 # IO.puts(Poker.checkSequenceV1([1, 2, 5, 4, 3]))
