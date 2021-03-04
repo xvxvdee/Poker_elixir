@@ -88,6 +88,13 @@ defmodule Poker do
     # returns a list of just the hands values (1-13)
   end
 
+  def finalHand(hand) do
+    final = []
+    setup = for n <- hand, do: "#{to_string(n)}#{checkSuit(n)}"
+    setup |> inspect(charlists: :as_lists)
+  end
+
+
   def sameSuit(hand) do
     lst = handToSuit(hand)
     set = MapSet.new(lst)
@@ -116,8 +123,8 @@ defmodule Poker do
     a = Enum.sort(hd(l))
     b = Enum.sort(hd(tl(l)))
     res = a ++ b
-    IO.puts(hand |> inspect(charlists: :as_lists))
-    IO.puts(res |> inspect(charlists: :as_lists))
+    # IO.puts(hand |> inspect(charlists: :as_lists))
+    # IO.puts(res |> inspect(charlists: :as_lists))
     res == lst
   end
 
@@ -342,20 +349,63 @@ defmodule Poker do
       rank =[getHighestRank(check1,[]),getHighestRank(check2,[])]
       high = getHighestRank(rank,[])
       if high in check1 do
-       IO.puts( hand1|> inspect(charlists: :as_lists))
+        hand1 
       else
-       IO.puts( hand2|> inspect(charlists: :as_lists))
+        hand2
       end 
     end
   end
 
-  def tie_flush (hand1,hand2):
+  def tie_flush(hand1,hand2) do
+    if getHighestRank(hand1,[]) != getHighestRank(hand2,[]) do
+      high = getHighestRank([getHighestRank(hand1,[]), getHighestRank(hand2,[])],[])
+      if high in hand1 do
+        IO.puts(hand1|> inspect(charlists: :as_lists))
+      else
+        IO.puts(hand2|> inspect(charlists: :as_lists))
+      end
+    else
+      high = getHighestRank([getHighestRank(hand1,[]), getHighestRank(hand2,[])],[])
+      tie_flush(hand1--[high],hand2--[high])
+    end
+  end
 
+  def tie_flushStraight_helper1(hand1,hand2) do
+    if getHighestRank(hand1,[]) != getHighestRank(hand2,[]) do
+      high = getHighestRank([getHighestRank(hand1,[]), getHighestRank(hand2,[])],[])
+      if high in hand1 do
+        hand1
+      else
+        hand2
+      end
+    else
+      high = getHighestRank([getHighestRank(hand1,[]), getHighestRank(hand2,[])],[])
+      tie_flush(hand1--[high],hand2--[high])
+    end
+  end
+
+  #WE MIGHT NEED THIS BUT NOT SURE. 
+  # def tie_flushStraight_helper2(hand,result) do
+  #   if Enum.member?(hand,hd(result))==false do
+  #     false
+  #   else
+  #     if length(result)==0 or result -- [hd(result)] == [] do
+  #       true
+  #     else
+  #       tie_flushStraight_helper2(hand,result -- [hd(result)])
+  #     end
+  #   end
+  # end
+  
+  # parameters should be passed in using hand_to_num
+  def tie_flushStraight(hand1,hand2) do
+    res = tie_flushStraight_helper1(hand1,hand2)
+    IO.puts(res|> inspect(charlists: :as_lists))
   end
   
 
 end
-
+# IO.puts(Enum.member?(1..10,5))
 # IO.puts(Poker.checkNum(28))
 # IO.puts(Poker.getHighestRank([1,2,3,4,5],[6]))
 # IO.puts(Poker.fullHouse([10, 23, 36, 1, 14]))
@@ -367,5 +417,6 @@ end
 # IO.puts(Poker.twoPair([14, 14, 16, 16, 1]))
 # IO.puts(Poker.pair([14, 14, 16, 17, 1]))
 # IO.puts(Poker.highCard([14, 15, 16, 17, 1]))
-IO.puts(Poker.tie_fullhouse([7, 7, 7, 11, 11],[8, 8, 8, 10, 10],1))
+IO.puts(Poker.tie_flushStraight([7,8,6,5,4],[7,10,3,5,4]))
+IO.puts(Poker.finalHand([1,2,3,4,5]))
 # IO.puts(Poker.checkSequenceV1([1, 2, 5, 4, 3]))
