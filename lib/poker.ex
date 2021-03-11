@@ -79,7 +79,7 @@ defmodule Poker do
     ans
   end
 
-  # Used to find the highest rank of pairs, three of a kinds etc. 
+  # Used to find the highest rank of pairs, three of a kinds etc.
   # Example getHighRankRecursive([[2,2],[3,3]], [2,2])
   # highest must be the head of the enumerable
   def getHighRankRecursive([], highest), do: highest |> inspect(charlists: :as_lists)
@@ -119,7 +119,7 @@ defmodule Poker do
   # Returns a hand in the form [[rank,suit],[rank,suit],etc]
   def transformHand(hand) do
     transform = for n <- hand, do: [checkNum(n), to_string(checkSuit(n))]
-    transform = Enum.sort(Enum)
+    transform = Enum.sort(transform)
     transform
   end
 
@@ -185,9 +185,9 @@ defmodule Poker do
 
 
   #----------------------------------------------------
-  
+
   # 3. deal method
-  
+
   # def deal(cards) do
   # end
 end
