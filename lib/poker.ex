@@ -19,9 +19,8 @@ defmodule Poker do
     ans
   end
 
-  def getHighestRank(hand, remove) do
+  def getHighestRank(hand) do
     lst = handToNum(hand)
-    lst = lst -- remove
 
     high =
       cond do
@@ -82,20 +81,20 @@ defmodule Poker do
   # Used to find the highest rank of pairs, three of a kinds etc.
   # Example getHighRankRecursive([[2,2],[3,3]], [2,2])
   # highest must be the head of the enumerable
-  def getHighRankRecursive([], highest), do: highest |> inspect(charlists: :as_lists)
+  # def getHighRankRecursive([], highest), do: highest
 
-  def getHighRankRecursive(choices, highest) do
-    a = hd(choices)
-    high = getHighestRank([getHighestRank(highest, []), getHighestRank(a, [])], [])
+  # def getHighRankRecursive(choices, highest) do
+  #   a = hd(choices)
+  #   high = getHighestRank([getHighestRank(highest, []), getHighestRank(a, [])], [])
 
-    ans =
-      cond do
-        high in handToNum(a) -> a
-        high in handToNum(highest) -> highest
-      end
+  #   ans =
+  #     cond do
+  #       high in handToNum(a) -> a
+  #       high in handToNum(highest) -> highest
+  #     end
 
-    getHighRankRecursive(choices -- [a], ans)
-  end
+  #   getHighRankRecursive(choices -- [a], ans)
+  # end
 
   # Helper method for pairs
   def equalPairs([], lst), do: lst
@@ -123,7 +122,14 @@ defmodule Poker do
     transform
   end
 
-  # POKER METHODS
+  def handToNum(hand) do
+    num = for n <- hand, do: checkNum(n)
+    num
+    # returns a list of just the hands values (1-13)
+  end
+
+  # POKER METHODS  https://www.fgbradleys.com/et_poker.asp
+  #|> inspect(charlists: :as_lists)
 
   # 1. Royal flush, straight flush, flush, straight, high card - Deandra
 
@@ -144,8 +150,11 @@ defmodule Poker do
   # end
 
   # high card --------------------------------------------
-  # def highCard(hand) do
-  # end
+  def highCard(hand) do
+    card = getHighestRank(hand)
+    [1,card]|> inspect(charlists: :as_lists)
+
+  end
 
   #TIE CONDITIONS ----------------------------------------
 
@@ -188,6 +197,20 @@ defmodule Poker do
 
   # 3. deal method
 
-  # def deal(cards) do
-  # end
+  # deal --------------------------------------------------------
+  # returns two hands [hand1,hand2]
+  def deal(cards) do
+    cards = cards
+    hand1=[hd(cards),hd tl tl cards]
+    hand2=[hd(tl(cards)), hd(tl(tl(tl(cards))))]
+    cards = cards -- hand1
+    cards = cards -- hand2
+    hand1 = Enum.sort(hand1 ++ cards)
+    hand2 = Enum.sort(hand2 ++ cards)
+    [hand1,hand2]
+  end
 end
+
+IO.inspect(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
+IO.inspect(Poker.equalPairs([[3,3],[4,4],[3,4]],[]))
+# IO.puts(Poker.highCard(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
