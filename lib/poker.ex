@@ -211,14 +211,12 @@ end
     c = not a and seq and suit and st
   
     ans =
-    cond do
-      b or a== true -> false
-      c == false -> false
-      c == true -> hand|> inspect(charlists: :as_lists)
-  
-    end
+      cond do
+        b or a== true -> false
+        c == false -> false
+        c == true -> hand|> inspect(charlists: :as_lists)
+      end
     ans
-  
   end
 
   def royalFlush(hand) do
@@ -266,7 +264,6 @@ end
       house
     end
   end
-
 
   def straight(hand) do
     num = handToNum(hand)
