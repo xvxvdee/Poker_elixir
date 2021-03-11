@@ -91,6 +91,16 @@ def recurHighRanks(choices,highest)do
   recurHighRanks(choices -- [a],ans)
 end
 
+def equalPairs([],lst), do: lst 
+def equalPairs(choices,lst) do
+  a = hd choices
+  if Enum.count(Enum.uniq(a))==1 do
+    equalPairs(choices--[a],lst++[a])
+  else
+    equalPairs(choices--[a],lst)
+  end
+end
+
   def handToSuit(hand) do
     suits = for n <- hand, do: checkSuit(n)
     suits
