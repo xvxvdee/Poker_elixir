@@ -630,6 +630,44 @@ end
     end
   end
 
+<<<<<<< HEAD
+  # need to add scenario when ace is the highest
+  def tie_highCard(hand1, hand2) do
+    firstVal1 = getHighestRank(hand1, [])
+    secondVal1 = getHighestRank(hand1, [firstVal1])
+    firstVal2 = getHighestRank(hand2, [])
+    secondVal2 = getHighestRank(hand1, [firstVal2])
+
+    cond do
+      firstVal1 > firstVal2 -> IO.inspect(hand1)
+      firstVal1 == firstVal2 ->
+        cond do
+          secondVal1 > secondVal2 -> IO.inspect(hand1)
+          secondVal1 < secondVal2 -> IO.inspect(hand2)
+        end
+      firstVal1 < firstVal2 -> IO.inspect(hand2)
+    end
+
+    # IO.puts(firstVal1)
+    # IO.puts(secondVal1)
+    # IO.puts(firstVal2)
+    # IO.puts(secondVal2)
+    # lst1 = handToNum(hand1)
+    # lst1 = Enum.sort(lst1)
+    # lst1 = Enum.chunk_by(lst1, fn x -> x end)
+    # lst1 = Enum.sort_by(lst1, &length/1, :desc)
+
+    # lst2 = handToNum(hand2)
+    # lst2 = Enum.sort(lst2)
+    # lst2 = Enum.chunk_by(lst2, fn x -> x end)
+    # lst2 = Enum.sort_by(lst2, &length/1, :desc)
+
+    # IO.inspect(lst1, charlists: :as_lists)
+    # IO.inspect(lst2, charlists: :as_lists)
+  end
+
+end
+
 
 
 
@@ -655,4 +693,4 @@ IO.puts(Poker.highCard([14, 15, 16, 17, 1]))
 # Poker.tie_onePair([2,15,6,17,7], [26,13,11,31,1])
 # Poker.tie_onePair([39,52,6,38,7], [26,13,11,31,1])
 # Poker.tie_highCard([39,50,6,38,7], [1,26,6,31,33])
-
+# IO.puts(Poker.checkSequenceV1([1, 2, 5, 4, 3]))
