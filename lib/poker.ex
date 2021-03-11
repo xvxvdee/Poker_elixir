@@ -255,43 +255,100 @@ end
   end
 
   def threeOfAKind(hand) do
-    lst = Enum.sort(hand)
-    lst = Enum.chunk_by(lst, fn x -> x end)
-    lst = Enum.sort_by(lst, &length/1, :desc)
-    a = Enum.count(hd(lst))
-    b = Enum.count(hd(tl(lst)))
-    cond1 = a == 3 and b == 1
+    # lst = handToNum(hand)
+    # lst = Enum.sort(lst)
+    # lst = Enum.chunk_by(lst, fn x -> x end)
+    # lst = Enum.sort_by(lst, &length/1, :desc)
+    # a = Enum.count(hd(lst))
+    # b = Enum.count(hd(tl(lst)))
+    # cond1 = a == 3 and b == 1
     # IO.puts(a)
     # IO.puts(b)
-    cond1
+    # IO.inspect(lst, charlists: :as_lists)
+    # cond1
+
+    lst = handToNum(hand)
+    lst = Enum.sort(lst)
+    lst = Enum.chunk_by(lst, fn x -> x end)
+    three = Enum.reject(lst, fn x -> Enum.count(x) < 3 end)
+    three = List.flatten(three)
+
+    ans =
+      cond do
+        Enum.empty?(three)==false -> three
+        three == [] -> false
+      end
+    ans
+    # ans|> inspect(charlists: :as_lists)
+
   end
 
   def twoPair(hand) do
-    lst = Enum.sort(hand)
+    # lst = handToNum(hand)
+    # lst = Enum.sort(lst)
+    # lst = Enum.chunk_by(lst, fn x -> x end)
+    # lst = Enum.sort_by(lst, &length/1, :desc)
+    # # a = Enum.count(hd(lst))
+    # # b = Enum.count(hd(tl(lst)))
+    # a = hd(lst)
+    # lst = tl(lst)
+    # b = hd(lst)
+    # IO.inspect(lst)
+    # IO.inspect(a)
+    # IO.inspect(b)
+    # h = a ++ b
+    # IO.inspect(h)
+    # # IO.puts(b)
+    # # a == 2 and b == 2
+
+    lst = handToNum(hand)
+    lst = Enum.sort(lst)
     lst = Enum.chunk_by(lst, fn x -> x end)
-    lst = Enum.sort_by(lst, &length/1, :desc)
-    a = Enum.count(hd(lst))
-    b = Enum.count(hd(tl(lst)))
-    # IO.puts(a)
-    # IO.puts(b)
-    a == 2 and b == 2
+    two = Enum.reject(lst, fn x -> Enum.count(x) < 2 end)
+    two = List.flatten(two)
+
+    ans =
+      cond do
+        Enum.empty?(two) == false -> two
+        two == [] -> false
+      end
+    # ans
+    ans|> inspect(charlists: :as_lists)
   end
 
   def pair(hand) do
-    lst = Enum.sort(hand)
+    # lst = handToNum(hand)
+    # lst = Enum.sort(lst)
+    # lst = Enum.chunk_by(lst, fn x -> x end)
+    # lst = Enum.sort_by(lst, &length/1, :desc)
+    # a = Enum.count(hd(lst))
+    # b = Enum.count(hd(tl(lst)))
+    # # IO.puts(a)
+    # # IO.puts(b)
+    # a == 2 and b == 1
+
+    lst = handToNum(hand)
+    lst = Enum.sort(lst)
     lst = Enum.chunk_by(lst, fn x -> x end)
-    lst = Enum.sort_by(lst, &length/1, :desc)
-    a = Enum.count(hd(lst))
-    b = Enum.count(hd(tl(lst)))
-    # IO.puts(a)
-    # IO.puts(b)
-    a == 2 and b == 1
+    two = Enum.reject(lst, fn x -> Enum.count(x) < 2 end)
+    two = List.flatten(two)
+
+    ans =
+      cond do
+        Enum.empty?(two) == false -> two
+        two == [] -> false
+      end
+    # ans
+    ans|> inspect(charlists: :as_lists)
   end
 
   def highCard(hand) do
-    lst = Enum.sort(hand)
-    lst = Enum.reverse(lst)
-    hd(lst)
+    # lst = Enum.sort(hand)
+    # lst = Enum.reverse(lst)
+    # hd(lst)
+
+    card = getHighestRank(hand, [])
+    card
   end
 
   #Tie methods
@@ -474,13 +531,6 @@ end
       hand2
     end
 
-    # IO.inspect(lst1)
-    # IO.inspect(lst2)
-    # IO.inspect(a)
-    # # IO.puts(b)
-    # IO.inspect(b)
-    # IO.puts(d)
-
   end
 
   # need to add scenario when ace is the highest
@@ -580,96 +630,7 @@ end
     end
   end
 
-  
-
-  
-
-  # # need to add scenario when ace is the highest
-  # def tie_highCard(hand1, hand2) do
-  #   firstVal1 = getHighestRank(hand1, [])
-  #   secondVal1 = getHighestRank(hand1, [firstVal1])
-  #   firstVal2 = getHighestRank(hand2, [])
-  #   secondVal2 = getHighestRank(hand1, [firstVal2])
-
-  #   cond do
-  #     firstVal1 > firstVal2 -> IO.inspect(hand1)
-  #     firstVal1 == firstVal2 ->
-  #       cond do
-  #         secondVal1 > secondVal2 -> IO.inspect(hand1)
-  #         secondVal1 < secondVal2 -> IO.inspect(hand2)
-  #       end
-  #     firstVal1 < firstVal2 -> IO.inspect(hand2)
-  #   end
-
-  #   IO.puts(firstVal1)
-  #   IO.puts(secondVal1)
-  #   IO.puts(firstVal2)
-  #   IO.puts(secondVal2)
-    # lst1 = handToNum(hand1)
-    # lst1 = Enum.sort(lst1)
-    # lst1 = Enum.chunk_by(lst1, fn x -> x end)
-    # lst1 = Enum.sort_by(lst1, &length/1, :desc)
-
-    # lst2 = handToNum(hand2)
-    # lst2 = Enum.sort(lst2)
-    # lst2 = Enum.chunk_by(lst2, fn x -> x end)
-    # lst2 = Enum.sort_by(lst2, &length/1, :desc)
-
-    # IO.inspect(lst1, charlists: :as_lists)
-    # IO.inspect(lst2, charlists: :as_lists)
-  # end
-  
-  # def helper([],hand1,hand2,_count), do: [hand1,hand2]
-  # def helper(lst,hand1,hand2,count)do
-  #   if count == 8 or Enum.count(lst)==0 do
-  #     [hand1,hand2]
-  #     IO.puts("here")
-  #   end
-  #   if rem(count,2)!=0 do
-  #     helper(lst--[hd lst],hand1++[hd lst],hand2,count+1)    
-  #   else  
-  #     helper(lst--[hd lst],hand1,hand2++[hd lst],count+1)    
-  #   end
-  # end
-
-  # def deal(lst) do
-  #   temp1=[]
-  #   temp2=[]
-  #   setup = helper(lst,temp1,temp2,0)
-  #   hand1 = hd setup 
-  #   hand2 = hd tl setup
-  #   IO.inspect(hand2)
-
-  # end
-
+<<<<<<< HEAD
+=======
 end
-IO.inspect(Poker.handToNum( [27, 45, 3,  48, 44, 43, 41, 33, 12 ]))
-#IO.puts(Poker.getCombo([1,7,7,7,7,3],7,[nil]))
-IO.puts(Poker.tie_fullhouse([6,6,6,7,7,1,1],[13,13,13,3,3],2))
-
-# IO.puts(Poker.helper([1, 2, 3, 4, 5, 6, 7, 8,9],[],[],0))
-
-# IO.puts( Poker.deal([1, 2, 3, 4, 5, 6, 7, 8,9]))
-# IO.puts(Enum.member?(1..10,5))
-# IO.puts(Poker.checkNum(28))
-# IO.puts(Poker.getHighestRank([1,2,3,4,5],[6]))
-#IO.puts(Poker.fullHouse([10, 10, 10, 14, 14,3,3]))
-# IO.puts(Poker.fullHouse([10,23,33,1,14]))
-# IO.puts(Poker.sameSuit([5,6,7,8,9]))
-#  IO.puts(Poker.straightFlush([1,4,3,2,5]))
-# IO.puts(Poker.fourOfAKind([14, 15, 16, 17, 1]))
-# IO.puts(Poker.threeOfAKind([11, 11, 11, 17, 4]))
-# IO.puts(Poker.twoPair([14, 14, 16, 16, 1]))
-# IO.puts(Poker.pair([14, 14, 16, 17, 1]))
-# IO.puts(Poker.highCard([14, 15, 16, 17, 1]))
-#IO.puts(Poker.tie_flushStraight([7,8,6,5,4],[7,10,3,5,4]))
-# IO.puts(Poker.finalHand([1,2,3,4,5]))
-# IO.inspect(Poker.tie_threeKind([2,15,4,5, 28], [5,31,4,2,18]))
-# Poker.tie_twoPair([2,15,4,17,7], [11,24,5,31,7])
-# Poker.tie_twoPair([2,15,4,17,7], [28,41,30,43,10])
-# Poker.tie_twoPair([2,15,4,17,7], [28,41,5,31,10])
-
-# Poker.tie_onePair([2,15,6,17,7], [26,13,11,31,1])
-# Poker.tie_onePair([39,52,6,38,7], [26,13,11,31,1])
-#IO.puts(Poker.getHighestRank([1,26,6,31,33],[]))
-# IO.puts(Poker.checkSequenceV1([1, 2, 5, 4, 3]))
+>>>>>>> 1eae349d4fcd96ed9e1974061f2b9883b802f95a
