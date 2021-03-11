@@ -655,5 +655,4 @@ IO.puts(Poker.highCard([14, 15, 16, 17, 1]))
 # Poker.tie_onePair([2,15,6,17,7], [26,13,11,31,1])
 # Poker.tie_onePair([39,52,6,38,7], [26,13,11,31,1])
 # Poker.tie_highCard([39,50,6,38,7], [1,26,6,31,33])
-# IO.puts(Poker.checkSequenceV1([1, 2, 5, 4, 3]))
 
