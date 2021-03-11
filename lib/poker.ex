@@ -81,19 +81,18 @@ defmodule Poker do
   # Used to find the highest rank of pairs, three of a kinds etc. 
   # Example getHighRankRecursive([[2,2],[3,3]], [2,2])
   # highest must be the head of the enumerable
-  def getHighRankRecursive([], highest), do: highest
-
+  def getHighRankRecursive([], highest), do: highest|> inspect(charlists: :as_lists)
   def getHighRankRecursive(choices, highest) do
-    a = hd(choices)
-    high = getHighestRank([getHighestRank(highest), getHighestRank(a)])
-
+    a = hd(hd (choices))
+    b = hd (choices)
+    high = getHighestRank([getHighestRank([hd highest]), getHighestRank([a])])
+    IO.inspect(hd highest) 
     ans =
       cond do
-        high in handToNum(a) -> a
-        high in handToNum(highest) -> highest
+        high in [a] -> b
+        high in [hd highest] -> [highest]
       end
-
-    getHighRankRecursive(choices -- [a], ans)
+    getHighRankRecursive(choices -- [hd choices], ans)
   end
 
   # Helper method for pairs
@@ -150,12 +149,27 @@ defmodule Poker do
 
   #straight ----------------------------------------------
   def straight(hand) do
-    # st = for x <- hand, do: hd(tl((x))) - hd(x)
-    # IO.puts(st)
-    IO.puts(hand|> inspect(charlists: :as_lists))
-    head = hd hand
-    IO.puts( head)
-    IO.puts(hd head)
+    num = for x <- hand, do: hd x # collecting numbers
+    setupPairs = Enum.chunk_every(num, 2, 1, :discard)
+    adj = for x <- setupPairs, do: hd(tl(x)) - hd(x) #Subtracting adjcant elements
+    IO.inspect(adj)
+    adj =  MapSet.new(adj)
+    IO.inspect(adj)
+    strt = String.length(Enum.join(adj, "")) 
+    condition =strt == 1 and 1 in adj 
+    IO.puts condition
+    five = hd(Enum.chunk_every(hand,5))
+    IO.puts(highCard(hand))
+    res =
+    cond do
+      condition = true -> [5,five]
+      condition =false -> highCard(hand)
+    end
+    res|> inspect(charlists: :as_lists)
+    # IO.puts(num|> inspect(charlists: :as_lists))
+    # IO.puts(hand|> inspect(charlists: :as_lists))
+    # IO.puts(hd hd hand)
+    # IO.puts(hd hd tl hand)
 
   end
 
@@ -169,6 +183,9 @@ defmodule Poker do
 
   # high card --------------------------------------------
   def highCard(hand) do
+    num = for x <- hand, do: hd x
+    suit = for x <- hand, do: tl x
+    IO.puts(suit|> inspect(charlists: :as_lists))
     card = getHighestRank(hand)
     [1,card]|> inspect(charlists: :as_lists)
 
@@ -229,6 +246,6 @@ defmodule Poker do
   end
 end
 
-IO.puts(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
-IO.puts(Poker.straight(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
+#IO.puts(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
+IO.puts(Poker.getHighRankRecursive([[3, "C"], [6, "S"], [9, "C"], [9, "S"], [10, "S"], [11, "C"], [11, "S"]], [3,"C"] ))
 #IO.puts(Poker.royalFlush([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
