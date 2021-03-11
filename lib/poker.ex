@@ -128,14 +128,14 @@ end
   end
 
   
-  def getDuplicates([],_element,lst), do: lst--[nil]|> inspect(charlists: :as_lists)
-  def getDuplicates(hand,element,lst) do
-    if element != hd hand do
-      getDuplicates(hand -- [hd hand],element,lst)      
-    else
-      getDuplicates(hand -- [hd hand],element,lst ++ [hd hand])     
-    end 
-  end
+  # def getDuplicates([],_element,lst), do: lst--[nil]|> inspect(charlists: :as_lists)
+  # def getDuplicates(hand,element,lst) do
+  #   if element != hd hand do
+  #     getDuplicates(hand -- [hd hand],element,lst)      
+  #   else
+  #     getDuplicates(hand -- [hd hand],element,lst ++ [hd hand])     
+  #   end 
+  # end
 
   # Check hand without Ace in the middle of it
   def checkSequenceV1(hand) do
@@ -148,18 +148,28 @@ end
     len == 1 and 1 in set
   end
 
-  # Check hand with Ace in the middle of it
-  def checkSequenceV2(hand) do
-    lst = handToNum(hand)
-    temp = Enum.split_while(lst, fn x -> x != 1 end)
-    l = Tuple.to_list(temp)
-    # IO.inspect(l)
-    a = Enum.sort(hd(l))
-    b = Enum.sort(hd(tl(l)))
-    res = a ++ b
-    # IO.puts(hand |> inspect(charlists: :as_lists))
-    # IO.puts(res |> inspect(charlists: :as_lists))
-    res == lst
+ 
+# Check hand without Ace in the middle of it
+def checkSequenceV1(hand) do
+  # hand = Enum.sort(hand)
+  lst = handToNum(hand)
+  temp = Enum.chunk_every(lst,2, 1, :discard)
+  check = for x <- temp, do: hd(tl(x))-hd(x)
+  checkTwo =for x <- temp, do: hd(x)-hd(tl(x))
+  set = MapSet.new(check)
+  set2 = MapSet.new(checkTwo)
+  len = String.length(Enum.join(set, ""))
+  len2 = String.length(Enum.join(set2, ""))
+  cond1 = len == 1 and 1 in set
+  cond2 = len2 == 1 and 1 in set2
+  ans = 
+    cond do
+    cond1 == true -> true
+    cond2 == true -> true
+    cond1 == false -> false
+    cond2 == false -> false
+    end
+    ans
   end
 
   # POKER METHODS
@@ -176,7 +186,6 @@ end
       end
     ans
   end
-
 
   def flush(hand) do
     suit = sameSuit(hand)
@@ -198,26 +207,31 @@ end
       end
     ans
   end
-  
   def straightFlush(hand) do
-    st = straight(hand)
+
     suit = sameSuit(hand)
     num = handToNum(hand)
     seq = checkSequenceV1(num)
-    seq2 = checkSequenceV2(num)
-  
-    a = hd(num) != 1 and 1 in num #checks if ace at beginning -> false 1 is at the beginning -> true 1 is in middle
-    b = a and seq2 and suit
-    c = not a and seq and suit and st
-  
-    ans =
-      cond do
-        b or a== true -> false
-        c == false -> false
-        c == true -> hand|> inspect(charlists: :as_lists)
-      end
+   
+    ace1= hd(num) == 1
+    ace2 = List.last(num) == 1
+    ace3 = 1 not in num
+    middle = not ace1 and not ace2
+    a =  ace2 and seq and suit and not middle
+    b =  ace1 and seq and suit and not middle
+    c =  ace3 and seq and suit
+    ans = 
+    cond do
+     a== true -> hand|> inspect(charlists: :as_lists)
+     b == true ->hand|> inspect(charlists: :as_lists)
+     c == true ->hand|> inspect(charlists: :as_lists)
+     a == false -> false
+     b == false -> false
+     c == true ->hand|> inspect(charlists: :as_lists)
+    end
     ans
-  end
+   
+   end
 
   def royalFlush(hand) do
     sflush = 
