@@ -82,7 +82,7 @@ defmodule Poker do
   # Used to find the highest rank of pairs, three of a kinds etc. 
   # Example getHighRankRecursive([[2,2],[3,3]], [2,2])
   # highest must be the head of the enumerable
-  def getHighRankRecursive([], highest), do: highest |> inspect(charlists: :as_lists)
+  def getHighRankRecursive([], highest), do: highest
 
   def getHighRankRecursive(choices, highest) do
     a = hd(choices)
@@ -119,11 +119,17 @@ defmodule Poker do
   # Returns a hand in the form [[rank,suit],[rank,suit],etc]
   def transformHand(hand) do
     transform = for n <- hand, do: [checkNum(n), to_string(checkSuit(n))]
-    transform = Enum.sort(Enum)
+    transform = Enum.sort(transform)
     transform
   end
 
-  # POKER METHODS
+  def handToNum(hand) do
+    num = for n <- hand, do: checkNum(n)
+    num
+    # returns a list of just the hands values (1-13)
+  end
+
+  # POKER METHODS |> inspect(charlists: :as_lists)
 
   # 1. Royal flush, straight flush, flush, straight, high card - Deandra
 
@@ -187,7 +193,19 @@ defmodule Poker do
   #----------------------------------------------------
   
   # 3. deal method
-  
-  # def deal(cards) do
-  # end
+
+  # deal --------------------------------------------------------
+  # returns two hands [hand1,hand2]
+  def deal(cards) do
+    cards = cards
+    hand1=[hd(cards),hd tl tl cards]
+    hand2=[hd(tl(cards)), hd(tl(tl(tl(cards))))]
+    cards = cards -- hand1
+    cards = cards -- hand2
+    hand1 = Enum.sort(hand1 ++ cards)
+    hand2 = Enum.sort(hand2 ++ cards)
+    [hand1,hand2]
+  end
 end
+
+IO.puts(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
