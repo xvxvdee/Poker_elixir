@@ -573,49 +573,7 @@ end
     end
   end
 
-  
 
-  
-
-  # # need to add scenario when ace is the highest
-  # def tie_highCard(hand1, hand2) do
-  #   firstVal1 = getHighestRank(hand1, [])
-  #   secondVal1 = getHighestRank(hand1, [firstVal1])
-  #   firstVal2 = getHighestRank(hand2, [])
-  #   secondVal2 = getHighestRank(hand1, [firstVal2])
-
-  #   cond do
-  #     firstVal1 > firstVal2 -> IO.inspect(hand1)
-  #     firstVal1 == firstVal2 ->
-  #       cond do
-  #         secondVal1 > secondVal2 -> IO.inspect(hand1)
-  #         secondVal1 < secondVal2 -> IO.inspect(hand2)
-  #       end
-  #     firstVal1 < firstVal2 -> IO.inspect(hand2)
-  #   end
-  
-  # def helper([],hand1,hand2,_count), do: [hand1,hand2]
-  # def helper(lst,hand1,hand2,count)do
-  #   if count == 8 or Enum.count(lst)==0 do
-  #     [hand1,hand2]
-  #     IO.puts("here")
-  #   end
-  #   if rem(count,2)!=0 do
-  #     helper(lst--[hd lst],hand1++[hd lst],hand2,count+1)    
-  #   else  
-  #     helper(lst--[hd lst],hand1,hand2++[hd lst],count+1)    
-  #   end
-  # end
-
-  # def deal(lst) do
-  #   temp1=[]
-  #   temp2=[]
-  #   setup = helper(lst,temp1,temp2,0)
-  #   hand1 = hd setup 
-  #   hand2 = hd tl setup
-  #   IO.inspect(hand2)
-
-  # endg
 
 end
 IO.inspect(Poker.handToNum( [27, 45, 3,  48, 44, 43, 41, 33, 12 ]))
