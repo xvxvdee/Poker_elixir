@@ -19,10 +19,11 @@ defmodule Poker do
     ans
   end
 
-  def getHighestRank(hand,remove) do
+  def getHighestRank(hand, remove) do
     lst = handToNum(hand)
     lst = lst -- remove
-    high=
+
+    high =
       cond do
         1 in lst -> 1
         13 in lst -> 13
@@ -38,14 +39,12 @@ defmodule Poker do
         3 in lst -> 3
         2 in lst -> 2
       end
-      high
+
+    high
   end
 
-
-  
-
   def checkNum(num) do
-    #Takes any number and returns its value with the range 1-13
+    # Takes any number and returns its value with the range 1-13
     a = num == 1 or num == 14 or num == 27 or num == 40
     b = num == 2 or num == 15 or num == 28 or num == 41
     c = num == 3 or num == 16 or num == 29 or num == 42
@@ -59,6 +58,7 @@ defmodule Poker do
     k = num == 11 or num == 24 or num == 37 or num == 50
     l = num == 12 or num == 25 or num == 38 or num == 51
     m = num == 13 or num == 26 or num == 39 or num == 52
+
     ans =
       cond do
         a -> 1
@@ -79,27 +79,32 @@ defmodule Poker do
     ans
   end
 
-def recurHighRanks([],highest),do: highest |> inspect(charlists: :as_lists)
-def recurHighRanks(choices,highest)do
-  a = hd choices
-  high = getHighestRank([getHighestRank(highest,[]),getHighestRank(a,[])],[])
-  ans =
-    cond do
-      high in handToNum(a) -> a
-      high in handToNum(highest) -> highest
-    end 
-  recurHighRanks(choices -- [a],ans)
-end
+  def recurHighRanks([], highest), do: highest |> inspect(charlists: :as_lists)
 
-def equalPairs([],lst), do: lst 
-def equalPairs(choices,lst) do
-  a = hd choices
-  if Enum.count(Enum.uniq(a))==1 do
-    equalPairs(choices--[a],lst++[a])
-  else
-    equalPairs(choices--[a],lst)
+  def recurHighRanks(choices, highest) do
+    a = hd(choices)
+    high = getHighestRank([getHighestRank(highest, []), getHighestRank(a, [])], [])
+
+    ans =
+      cond do
+        high in handToNum(a) -> a
+        high in handToNum(highest) -> highest
+      end
+
+    recurHighRanks(choices -- [a], ans)
   end
-end
+
+  def equalPairs([], lst), do: lst
+
+  def equalPairs(choices, lst) do
+    a = hd(choices)
+
+    if Enum.count(Enum.uniq(a)) == 1 do
+      equalPairs(choices -- [a], lst ++ [a])
+    else
+      equalPairs(choices -- [a], lst)
+    end
+  end
 
   def handToSuit(hand) do
     suits = for n <- hand, do: checkSuit(n)
@@ -118,7 +123,6 @@ end
     setup |> inspect(charlists: :as_lists)
   end
 
-
   def sameSuit(hand) do
     lst = handToSuit(hand)
     set = MapSet.new(lst)
@@ -127,7 +131,6 @@ end
     # takes in hand and returns true if values in the hand have the same suit
   end
 
-  
   # def getDuplicates([],_element,lst), do: lst--[nil]|> inspect(charlists: :as_lists)
   # def getDuplicates(hand,element,lst) do
   #   if element != hd hand do
@@ -141,34 +144,35 @@ end
   def checkSequenceV1(hand) do
     # hand = Enum.sort(hand)
     lst = handToNum(hand)
-    temp = Enum.chunk_every(lst,2, 1, :discard)
-    check = for x <- temp, do: hd(tl(x))-hd(x)
+    temp = Enum.chunk_every(lst, 2, 1, :discard)
+    check = for x <- temp, do: hd(tl(x)) - hd(x)
     set = MapSet.new(check)
     len = String.length(Enum.join(set, ""))
     len == 1 and 1 in set
   end
 
- 
-# Check hand without Ace in the middle of it
-def checkSequenceV1(hand) do
-  # hand = Enum.sort(hand)
-  lst = handToNum(hand)
-  temp = Enum.chunk_every(lst,2, 1, :discard)
-  check = for x <- temp, do: hd(tl(x))-hd(x)
-  checkTwo =for x <- temp, do: hd(x)-hd(tl(x))
-  set = MapSet.new(check)
-  set2 = MapSet.new(checkTwo)
-  len = String.length(Enum.join(set, ""))
-  len2 = String.length(Enum.join(set2, ""))
-  cond1 = len == 1 and 1 in set
-  cond2 = len2 == 1 and 1 in set2
-  ans = 
-    cond do
-    cond1 == true -> true
-    cond2 == true -> true
-    cond1 == false -> false
-    cond2 == false -> false
-    end
+  # Check hand without Ace in the middle of it
+  def checkSequenceV1(hand) do
+    # hand = Enum.sort(hand)
+    lst = handToNum(hand)
+    temp = Enum.chunk_every(lst, 2, 1, :discard)
+    check = for x <- temp, do: hd(tl(x)) - hd(x)
+    checkTwo = for x <- temp, do: hd(x) - hd(tl(x))
+    set = MapSet.new(check)
+    set2 = MapSet.new(checkTwo)
+    len = String.length(Enum.join(set, ""))
+    len2 = String.length(Enum.join(set2, ""))
+    cond1 = len == 1 and 1 in set
+    cond2 = len2 == 1 and 1 in set2
+
+    ans =
+      cond do
+        cond1 == true -> true
+        cond2 == true -> true
+        cond1 == false -> false
+        cond2 == false -> false
+      end
+
     ans
   end
 
@@ -179,11 +183,13 @@ def checkSequenceV1(hand) do
     lst = Enum.chunk_by(lst, fn x -> x end)
     four = Enum.reject(lst, fn x -> Enum.count(x) < 4 end)
     four = List.flatten(four)
-    ans = 
+
+    ans =
       cond do
-        Enum.empty?(four)==false -> four
+        Enum.empty?(four) == false -> four
         four == [] -> false
       end
+
     ans
   end
 
@@ -192,89 +198,100 @@ def checkSequenceV1(hand) do
     num = handToNum(hand)
     seq = checkSequenceV1(num)
     seq2 = checkSequenceV2(num)
-  
+
     a = hd(num) != 1 and 1 in num
     b = a and not seq2 and suit
     c = not a and not seq and suit
+
     # IO.puts(suit)
-  
+
     ans =
       cond do
-        a or b== true -> hand
-        a or c== true -> hand
+        a or b == true -> hand
+        a or c == true -> hand
         a or b == false -> false
         a or c == false -> false
       end
+
     ans
   end
-  def straightFlush(hand) do
 
+  def straightFlush(hand) do
     suit = sameSuit(hand)
     num = handToNum(hand)
     seq = checkSequenceV1(num)
-   
-    ace1= hd(num) == 1
+
+    ace1 = hd(num) == 1
     ace2 = List.last(num) == 1
     ace3 = 1 not in num
     middle = not ace1 and not ace2
-    a =  ace2 and seq and suit and not middle
-    b =  ace1 and seq and suit and not middle
-    c =  ace3 and seq and suit
-    ans = 
-    cond do
-     a== true -> hand|> inspect(charlists: :as_lists)
-     b == true ->hand|> inspect(charlists: :as_lists)
-     c == true ->hand|> inspect(charlists: :as_lists)
-     a == false -> false
-     b == false -> false
-     c == true ->hand|> inspect(charlists: :as_lists)
-    end
+    a = ace2 and seq and suit and not middle
+    b = ace1 and seq and suit and not middle
+    c = ace3 and seq and suit
+
+    ans =
+      cond do
+        a == true -> hand
+        b == true -> hand
+        c == true -> hand
+        a == false -> false
+        b == false -> false
+        c == false -> false
+      end
+
     ans
-   
-   end
+  end
 
   def royalFlush(hand) do
-    sflush = 
-    cond do
-      Enum.empty?(straightFlush(hand))==true -> false
-      Enum.empty?(straightFlush(hand))==false -> true
-    end
+    sflush =
+      cond do
+        Enum.empty?(straightFlush(hand)) == true -> false
+        Enum.empty?(straightFlush(hand)) == false -> true
+      end
+
     check = sflush and 1 in hand
+
     ans =
-    cond do
-      check ==true -> hand
-      check ==false -> false
-    end
+      cond do
+        check == true -> hand
+        check == false -> false
+      end
+
     ans
   end
 
   def fullHouse(hand) do
     lst = handToNum(hand)
     dup = Enum.chunk_by(lst, fn x -> x end)
-    mainCheck = 3 in (for x <- dup, do: Enum.count(x))
+    mainCheck = 3 in for x <- dup, do: Enum.count(x)
+
     if mainCheck == false do
-       mainCheck
-    else  
+      mainCheck
+    else
       three = Enum.reject(dup, fn x -> Enum.count(x) < 3 end)
-      build = recurHighRanks(three,hd three)
-      setup = 
-      cond do
-        Enum.count(build)!=3 -> hd Enum.chunk_every(build,3)
-        Enum.count(build)==3 -> build
-      end
+      build = recurHighRanks(three, hd(three))
+
+      setup =
+        cond do
+          Enum.count(build) != 3 -> hd(Enum.chunk_every(build, 3))
+          Enum.count(build) == 3 -> build
+        end
+
       house = setup
       temp = lst -- house
-  
+
       duptemp = Enum.chunk_every(temp, 2)
       dubtemp = Enum.reject(duptemp, fn x -> Enum.count(x) != 2 end)
-      eq = equalPairs(dubtemp,[])
-      pair = 
-      cond do
-        Enum.count(eq)==1 -> List.flatten(eq)
-        Enum.count(eq)!= 1-> recurHighRanks(eq,hd eq)
-      end
+      eq = equalPairs(dubtemp, [])
+
+      pair =
+        cond do
+          Enum.count(eq) == 1 -> List.flatten(eq)
+          Enum.count(eq) != 1 -> recurHighRanks(eq, hd(eq))
+        end
+
       house = house ++ pair
-  
+
       house
     end
   end
@@ -318,12 +335,12 @@ def checkSequenceV1(hand) do
 
     ans =
       cond do
-        Enum.empty?(three)==false -> three
+        Enum.empty?(three) == false -> three
         three == [] -> false
       end
+
     ans
     # ans|> inspect(charlists: :as_lists)
-
   end
 
   def twoPair(hand) do
@@ -355,8 +372,9 @@ def checkSequenceV1(hand) do
         Enum.empty?(two) == false -> two
         two == [] -> false
       end
+
     # ans
-    ans|> inspect(charlists: :as_lists)
+    ans |> inspect(charlists: :as_lists)
   end
 
   def pair(hand) do
@@ -381,80 +399,49 @@ def checkSequenceV1(hand) do
         Enum.empty?(two) == false -> two
         two == [] -> false
       end
+
     # ans
-    ans|> inspect(charlists: :as_lists)
+    ans |> inspect(charlists: :as_lists)
   end
 
-  def highCard(hand) do
-    # lst = Enum.sort(hand)
-    # lst = Enum.reverse(lst)
-    # hd(lst)
-
-    card = getHighestRank(hand, [])
-    card
-  end
-
-  #Tie methods
-  def tie_fourkind(hand1,hand2,type) do
-    lst1 = handToNum(hand1)
-    lst1 = Enum.chunk_by(lst1, fn x -> x end)
-    lst2 = handToNum(hand2)
-    lst2 = Enum.chunk_by(lst2, fn x -> x end)
-    a = Enum.count(hd(lst1))
-    b = Enum.count(hd(tl(lst1)))
-    c = Enum.count(hd(lst2))
-    d = Enum.count(hd(tl(lst2)))
+  # Tie methods
+  def tie_fourkind(hand1, hand2, type) do
+    four1 = fourOfAKind(hand1)
+    four2 = fourOfAKind(hand2)
+    lst1 = hand1 -- four1
+    lst2 = hand2 -- four2
 
     if type == 1 do
-      check1 =
+      high = getHighestRank([getHighestRank(four1, []), getHighestRank(four2, [])], [])
+
+      win =
         cond do
-          a==4 -> hd(lst1)
-          b==4 ->(hd(tl(lst1)))
+          high in four1 -> four1
+          high in four2 -> four2
         end
-        check2 =
+
+      IO.puts(win |> inspect(charlists: :as_lists))
+    end
+
+    if type == 2 do
+      high = getHighestRank([getHighestRank([hd(lst1)], []), getHighestRank([hd(lst2)], [])], [])
+
+      win =
         cond do
-          c==4 -> hd(lst2)
-          d==4 ->(hd(tl(lst2)))
+          high in lst1 -> lst1
+          high in lst2 -> lst2
         end
-      rank =[getHighestRank(check1,[]),getHighestRank(check2,[])]
-      high = getHighestRank(rank,[])
-      if high in check1 do
-        IO.puts(check1|> inspect(charlists: :as_lists))
-      else
-        IO.puts(check2|> inspect(charlists: :as_lists))
 
-      end
-
-    else
-      check1 =
-      cond do
-        a==1 -> hd(lst1)
-        b==1 ->(hd(tl(lst1)))
-      end
-      check2 =
-      cond do
-        c==1 -> hd(lst2)
-        d==1 ->(hd(tl(lst2)))
-      end
-      rank =[getHighestRank(check1,[]),getHighestRank(check2,[])]
-      high = getHighestRank(rank,[])
-      if high in check1 do
-        IO.puts(check1|> inspect(charlists: :as_lists))
-
-      else
-        IO.puts(check2|> inspect(charlists: :as_lists))
-
-      end
+      win |> inspect(charlists: :as_lists)
     end
   end
 
-  #FullHouse Tie
-  def tie_fullhouse(hand1,hand2,_type) do
-    test = for n <- hand1, do: getDuplicates(hand1,n,[])
+  # FullHouse Tie
+  def tie_fullhouse(hand1, hand2, _type) do
+    test = for n <- hand1, do: getDuplicates(hand1, n, [])
     test = Enum.uniq(test)
-    test|> inspect(charlists: :as_lists)
-    hd test
-
+    test |> inspect(charlists: :as_lists)
+    hd(test)
 
     # lst1 = handToNum(hand1)
     # lst1 = Enum.chunk_by(lst1, fn x -> x end)
@@ -507,35 +494,37 @@ def checkSequenceV1(hand) do
     # end
   end
 
-  def tie_flush(hand1,hand2) do
-    if getHighestRank(hand1,[]) != getHighestRank(hand2,[]) do
-      high = getHighestRank([getHighestRank(hand1,[]), getHighestRank(hand2,[])],[])
+  def tie_flush(hand1, hand2) do
+    if getHighestRank(hand1, []) != getHighestRank(hand2, []) do
+      high = getHighestRank([getHighestRank(hand1, []), getHighestRank(hand2, [])], [])
+
       if high in hand1 do
-        IO.puts(hand1|> inspect(charlists: :as_lists))
+        IO.puts(hand1 |> inspect(charlists: :as_lists))
       else
-        IO.puts(hand2|> inspect(charlists: :as_lists))
+        IO.puts(hand2 |> inspect(charlists: :as_lists))
       end
     else
-      high = getHighestRank([getHighestRank(hand1,[]), getHighestRank(hand2,[])],[])
-      tie_flush(hand1--[high],hand2--[high])
+      high = getHighestRank([getHighestRank(hand1, []), getHighestRank(hand2, [])], [])
+      tie_flush(hand1 -- [high], hand2 -- [high])
     end
   end
 
-  def tie_flushStraight_helper1(hand1,hand2) do
-    if getHighestRank(hand1,[]) != getHighestRank(hand2,[]) do
-      high = getHighestRank([getHighestRank(hand1,[]), getHighestRank(hand2,[])],[])
+  def tie_flushStraight_helper1(hand1, hand2) do
+    if getHighestRank(hand1, []) != getHighestRank(hand2, []) do
+      high = getHighestRank([getHighestRank(hand1, []), getHighestRank(hand2, [])], [])
+
       if high in hand1 do
         hand1
       else
         hand2
       end
     else
-      high = getHighestRank([getHighestRank(hand1,[]), getHighestRank(hand2,[])],[])
-      tie_flush(hand1--[high],hand2--[high])
+      high = getHighestRank([getHighestRank(hand1, []), getHighestRank(hand2, [])], [])
+      tie_flush(hand1 -- [high], hand2 -- [high])
     end
   end
 
-  #WE MIGHT NEED THIS BUT NOT SURE.
+  # WE MIGHT NEED THIS BUT NOT SURE.
   # def tie_flushStraight_helper2(hand,result) do
   #   if Enum.member?(hand,hd(result))==false do
   #     false
@@ -549,9 +538,9 @@ def checkSequenceV1(hand) do
   # end
 
   # parameters should be passed in using hand_to_num
-  def tie_flushStraight(hand1,hand2) do
-    res = tie_flushStraight_helper1(hand1,hand2)
-    IO.puts(res|> inspect(charlists: :as_lists))
+  def tie_flushStraight(hand1, hand2) do
+    res = tie_flushStraight_helper1(hand1, hand2)
+    IO.puts(res |> inspect(charlists: :as_lists))
   end
 
   def tie_threeKind(hand1, hand2) do
@@ -573,7 +562,6 @@ def checkSequenceV1(hand) do
     else
       hand2
     end
-
   end
 
   # need to add scenario when ace is the highest
@@ -639,7 +627,6 @@ def checkSequenceV1(hand) do
 
   # end
 
-
   # need to add scenario when ace is the highest
   def tie_onePair(hand1, hand2) do
     lst1 = handToNum(hand1)
@@ -656,12 +643,14 @@ def checkSequenceV1(hand) do
     # IO.inspect(lst2, charlists: :as_lists)
 
     a = hd(lst1)
-    b = hd(tl((tl(tl(lst1)))))
+    b = hd(tl(tl(tl(lst1))))
     c = hd(lst2)
-    d = hd(tl((tl(tl(lst2)))))
+    d = hd(tl(tl(tl(lst2))))
 
     cond do
-      hd(a) > hd(c) -> IO.inspect(hand1)
+      hd(a) > hd(c) ->
+        IO.inspect(hand1)
+
       # condition for if first pair is the same
       hd(a) == hd(c) ->
         cond do
@@ -669,7 +658,9 @@ def checkSequenceV1(hand) do
           hd(b) > hd(d) -> IO.inspect(hand1)
           hd(b) < hd(d) -> IO.inspect(hand2)
         end
-      hd(a) < hd(c) -> IO.inspect(hand2)
+
+      hd(a) < hd(c) ->
+        IO.inspect(hand2)
     end
   end
 
@@ -681,13 +672,17 @@ def checkSequenceV1(hand) do
     secondVal2 = getHighestRank(hand1, [firstVal2])
 
     cond do
-      firstVal1 > firstVal2 -> IO.inspect(hand1)
+      firstVal1 > firstVal2 ->
+        IO.inspect(hand1)
+
       firstVal1 == firstVal2 ->
         cond do
           secondVal1 > secondVal2 -> IO.inspect(hand1)
           secondVal1 < secondVal2 -> IO.inspect(hand2)
         end
-      firstVal1 < firstVal2 -> IO.inspect(hand2)
+
+      firstVal1 < firstVal2 ->
+        IO.inspect(hand2)
     end
 
     # IO.puts(firstVal1)
@@ -707,11 +702,7 @@ def checkSequenceV1(hand) do
     # IO.inspect(lst1, charlists: :as_lists)
     # IO.inspect(lst2, charlists: :as_lists)
   end
-
 end
-
-
-
 
 # IO.puts(Enum.member?(1..10,5))
 # IO.puts(Poker.checkNum(28))
@@ -724,7 +715,6 @@ end
 # IO.puts(Poker.threeOfAKind([11, 24, 5, 8, 50, 13, 2]))
 # IO.puts(Poker.twoPair([14, 13, 3, 16, 1, 11, 24]))
 # IO.puts(Poker.pair([14, 1, 16, 17, 2, 5, 31]))
-IO.puts(Poker.highCard([14, 15, 16, 17, 1]))
 # IO.puts(Poker.tie_flushStraight([7,8,6,5,4],[7,10,3,5,4]))
 # IO.puts(Poker.finalHand([1,2,3,4,5]))
 # IO.inspect(Poker.tie_threeKind([2,15,4,5, 28], [5,31,4,2,18]))
