@@ -41,6 +41,9 @@ defmodule Poker do
       high
   end
 
+
+  
+
   def checkNum(num) do
     #Takes any number and returns its value with the range 1-13
     a = num == 1 or num == 14 or num == 27 or num == 40
@@ -76,6 +79,18 @@ defmodule Poker do
     ans
   end
 
+def recurHighRanks([],highest),do: highest |> inspect(charlists: :as_lists)
+def recurHighRanks(choices,highest)do
+  a = hd choices
+  high = getHighestRank([getHighestRank(highest,[]),getHighestRank(a,[])],[])
+  ans =
+    cond do
+      high in handToNum(a) -> a
+      high in handToNum(highest) -> highest
+    end 
+  recurHighRanks(choices -- [a],ans)
+end
+
   def handToSuit(hand) do
     suits = for n <- hand, do: checkSuit(n)
     suits
@@ -89,7 +104,6 @@ defmodule Poker do
   end
 
   def finalHand(hand) do
-    final = []
     setup = for n <- hand, do: "#{to_string(n)}#{checkSuit(n)}"
     setup |> inspect(charlists: :as_lists)
   end
@@ -101,6 +115,16 @@ defmodule Poker do
     len = String.length(Enum.join(set, ""))
     len == 1
     # takes in hand and returns true if values in the hand have the same suit
+  end
+
+  
+  def getDuplicates([],_element,lst), do: lst--[nil]|> inspect(charlists: :as_lists)
+  def getDuplicates(hand,element,lst) do
+    if element != hd hand do
+      getDuplicates(hand -- [hd hand],element,lst)      
+    else
+      getDuplicates(hand -- [hd hand],element,lst ++ [hd hand])     
+    end 
   end
 
   # Check hand without Ace in the middle of it
@@ -131,59 +155,74 @@ defmodule Poker do
   # POKER METHODS
   def fourOfAKind(hand) do
     lst = handToNum(hand)
+    lst = Enum.sort(lst)
     lst = Enum.chunk_by(lst, fn x -> x end)
-    a = Enum.count(hd(lst))
-    b = Enum.count(hd(tl(lst)))
-    cond1 = a == 4 and b == 1
-    cond2 = a == 1 and b == 4
-    # IO.puts(a)
-    # IO.puts(b)
-    cond1 or cond2
+    four = Enum.reject(lst, fn x -> Enum.count(x) < 4 end)
+    four = List.flatten(four)
+    ans = 
+      cond do
+        Enum.empty?(four)==false -> four
+        four == [] -> false
+      end
+    ans|> inspect(charlists: :as_lists)
   end
+
 
   def flush(hand) do
     suit = sameSuit(hand)
     num = handToNum(hand)
     seq = checkSequenceV1(num)
     seq2 = checkSequenceV2(num)
-
+  
     a = hd(num) != 1 and 1 in num
     b = a and not seq2 and suit
     c = not a and not seq and suit
     # IO.puts(suit)
-    # IO.puts(b)
-    # IO.puts(c)
+  
     ans =
       cond do
-        a == true -> b
-        a == false -> c
+        a or b== true -> hand|> inspect(charlists: :as_lists)
+        a or c== true -> hand|> inspect(charlists: :as_lists)
+        a or b == false -> false
+        a or c == false -> false
       end
-
     ans
   end
-
+  
   def straightFlush(hand) do
     suit = sameSuit(hand)
     num = handToNum(hand)
     seq = checkSequenceV1(num)
     seq2 = checkSequenceV2(num)
-
+  
     a = hd(num) != 1 and 1 in num
     b = a and seq2 and suit
     c = not a and seq and suit
-
+  
     ans =
       cond do
-        a == true -> b
-        a == false -> c
+        a or b== true -> hand|> inspect(charlists: :as_lists)
+        a or c== true -> hand|> inspect(charlists: :as_lists)
+        a or b == false -> false
+        a or c == false -> false
       end
-
+  
     ans
   end
 
   def royalFlush(hand) do
-    lst = handToNum(hand)
-    straightFlush(hand) and 1 in lst
+    sflush = 
+    cond do
+      Enum.empty?(straightFlush(hand))==true -> false
+      Enum.empty?(straightFlush(hand))==false -> true
+    end
+    check = sflush and 1 in hand
+    ans =
+    cond do
+      check ==true -> hand|> inspect(charlists: :as_lists)
+      check ==false -> false
+    end
+    ans
   end
 
   def fullHouse(hand) do
@@ -191,6 +230,7 @@ defmodule Poker do
     lst = Enum.chunk_by(lst, fn x -> x end)
     a = Enum.count(hd(lst))
     b = Enum.count(hd(tl(lst)))
+    IO.puts(hd lst)
     cond1 = a == 2 and b == 3
     cond2 = a == 3 and b == 2
     cond1 or cond2
@@ -336,9 +376,10 @@ defmodule Poker do
       rank =[getHighestRank(check1,[]),getHighestRank(check2,[])]
       high = getHighestRank(rank,[])
       if high in check1 do
-        hand1
+        IO.puts(check1|> inspect(charlists: :as_lists))
       else
-        hand2
+        IO.puts(check2|> inspect(charlists: :as_lists))
+
       end
 
     else
@@ -355,62 +396,72 @@ defmodule Poker do
       rank =[getHighestRank(check1,[]),getHighestRank(check2,[])]
       high = getHighestRank(rank,[])
       if high in check1 do
-        hand1
+        IO.puts(check1|> inspect(charlists: :as_lists))
+
       else
-        hand2
+        IO.puts(check2|> inspect(charlists: :as_lists))
+
       end
     end
   end
 
   #FullHouse Tie
-  def tie_fullhouse(hand1,hand2,type) do
-    lst1 = handToNum(hand1)
-    lst1 = Enum.chunk_by(lst1, fn x -> x end)
-    lst2 = handToNum(hand2)
-    lst2 = Enum.chunk_by(lst2, fn x -> x end)
-    a = Enum.count(hd(lst1))
-    b = Enum.count(hd(tl(lst1)))
-    c = Enum.count(hd(lst2))
-    d = Enum.count(hd(tl(lst2)))
+  def tie_fullhouse(hand1,hand2,_type) do
+    test = for n <- hand1, do: getDuplicates(hand1,n,[])
+    test = Enum.uniq(test)
+    test|> inspect(charlists: :as_lists)
+    hd test
 
-    if type == 1 do
-      check1 =
-        cond do
-          a==3 -> hd(lst1)
-          b==3 ->(hd(tl(lst1)))
-        end
-        check2 =
-        cond do
-          c==3 -> hd(lst2)
-          d==3 ->(hd(tl(lst2)))
-        end
-      rank =[getHighestRank(check1,[]),getHighestRank(check2,[])]
-      high = getHighestRank(rank,[])
-      if high in check1 do
-        IO.puts(hand1|> inspect(charlists: :as_lists))
-      else
-        IO.puts(hand2|> inspect(charlists: :as_lists))
-      end
 
-    else
-      check1 =
-      cond do
-        a==2 -> hd(lst1)
-        b==2 ->(hd(tl(lst1)))
-      end
-      check2 =
-      cond do
-        c==2 -> hd(lst2)
-        d==2 ->(hd(tl(lst2)))
-      end
-      rank =[getHighestRank(check1,[]),getHighestRank(check2,[])]
-      high = getHighestRank(rank,[])
-      if high in check1 do
-        hand1
-      else
-        hand2
-      end
-    end
+    # lst1 = handToNum(hand1)
+    # lst1 = Enum.chunk_by(lst1, fn x -> x end)
+    # lst2 = handToNum(hand2)
+    # lst2 = Enum.chunk_by(lst2, fn x -> x end)
+    # a = hd(lst1)
+    # b = hd(tl(lst1))
+    # c = hd(lst2)
+    # d = hd(tl(lst2))
+    # IO.puts(b|> inspect(charlists: :as_lists))
+    # if type == 1 do
+    #   check1 =
+    #     cond do
+    #       Enum.count(a)==3 -> a
+    #       Enum.count(b)==3 ->b
+    #     end
+    #     check2 =
+    #     cond do
+    #       Enum.count(c)==3 -> c
+    #       Enum.count(d)==3 ->d
+    #     end
+    #   rank =[getHighestRank(check1,[]),getHighestRank(check2,[])]
+    #   high = getHighestRank(rank,[])
+    #   if high in check1 do
+    #     IO.puts(check1|> inspect(charlists: :as_lists))
+    #   else
+    #     IO.puts(check2|> inspect(charlists: :as_lists))
+    #   end
+    # end
+    # if type == 2 do
+    #   check1 =
+    #   cond do
+    #     Enum.count(a)==2 -> a
+    #     Enum.count(b)==2 -> b
+    #   end
+    #   check2 =
+    #   cond do
+    #     Enum.count(c)==2 -> c
+    #     Enum.count(d)==2 ->d
+    #   end
+    #   rank =[getHighestRank(check1,[]),getHighestRank(check2,[])]
+    #   high = getHighestRank(rank,[])
+    #   if high in check1 do
+    #     IO.puts(check1)
+    #     IO.puts(check1|> inspect(charlists: :as_lists))
+    #   else
+    #     IO.puts(check2)
+    #     IO.puts(check2|> inspect(charlists: :as_lists))
+    #   end
+    # end
   end
 
   def tie_flush(hand1,hand2) do
@@ -483,67 +534,67 @@ defmodule Poker do
   end
 
   # need to add scenario when ace is the highest
-  def tie_twoPair(hand1, hand2) do
-    lst1 = handToNum(hand1)
-    lst1 = Enum.sort(lst1)
-    lst1 = Enum.chunk_by(lst1, fn x -> x end)
-    lst1 = Enum.sort_by(lst1, &length/1, :desc)
+  # def tie_twoPair(hand1, hand2) do
+  #   lst1 = handToNum(hand1)
+  #   lst1 = Enum.sort(lst1)
+  #   lst1 = Enum.chunk_by(lst1, fn x -> x end)
+  #   lst1 = Enum.sort_by(lst1, &length/1, :desc)
 
-    lst2 = handToNum(hand2)
-    lst2 = Enum.sort(lst2)
-    lst2 = Enum.chunk_by(lst2, fn x -> x end)
-    lst2 = Enum.sort_by(lst2, &length/1, :desc)
+  #   lst2 = handToNum(hand2)
+  #   lst2 = Enum.sort(lst2)
+  #   lst2 = Enum.chunk_by(lst2, fn x -> x end)
+  #   lst2 = Enum.sort_by(lst2, &length/1, :desc)
 
-    a = hd(lst1)
-    b = hd(tl(lst1))
-    c = hd((tl(tl(lst1))))
-    d = hd(lst2)
-    e = hd(tl(lst2))
-    f = hd((tl(tl(lst2))))
+  #   a = hd(lst1)
+  #   b = hd(tl(lst1))
+  #   c = hd((tl(tl(lst1))))
+  #   d = hd(lst2)
+  #   e = hd(tl(lst2))
+  #   f = hd((tl(tl(lst2))))
 
-    firstPair1 =
-    cond do
-      hd(a) > hd(b) -> hd(a)
-      hd(b) > hd(a) -> hd(b)
-    end
+  #   firstPair1 =
+  #   cond do
+  #     hd(a) > hd(b) -> hd(a)
+  #     hd(b) > hd(a) -> hd(b)
+  #   end
 
-    secondPair1 =
-    cond do
-      hd(a) > hd(b) -> hd(b)
-      hd(b) > hd(a) -> hd(a)
-    end
+  #   secondPair1 =
+  #   cond do
+  #     hd(a) > hd(b) -> hd(b)
+  #     hd(b) > hd(a) -> hd(a)
+  #   end
 
-    firstPair2 =
-    cond do
-      hd(d) > hd(e) -> hd(d)
-      hd(e) > hd(d) -> hd(e)
-    end
+  #   firstPair2 =
+  #   cond do
+  #     hd(d) > hd(e) -> hd(d)
+  #     hd(e) > hd(d) -> hd(e)
+  #   end
 
-    secondPair2 =
-    cond do
-      hd(d) > hd(e) -> hd(e)
-      hd(e) > hd(d) -> hd(d)
-    end
+  #   secondPair2 =
+  #   cond do
+  #     hd(d) > hd(e) -> hd(e)
+  #     hd(e) > hd(d) -> hd(d)
+  #   end
 
-    cond do
-      firstPair1 > firstPair2 -> IO.inspect(hand1)
-      # condition for if first pair is the same
-      firstPair1 == firstPair2 ->
-        cond do
-          secondPair1 > secondPair1 -> IO.inspect(hand1)
-          # condition for if first and second pair are the same
-          secondPair1 == secondPair2 ->
-            if c > f do
-              IO.inspect(hand1)
-            else
-              IO.inspect(hand2)
-            end
-          secondPair1 < secondPair2 -> IO.inspect(hand2)
-        end
-      firstPair1 < firstPair2 -> IO.inspect(hand2)
-    end
+  #   cond do
+  #     firstPair1 > firstPair2 -> IO.inspect(hand1)
+  #     # condition for if first pair is the same
+  #     firstPair1 == firstPair2 ->
+  #       cond do
+  #         secondPair1 > secondPair1 -> IO.inspect(hand1)
+  #         # condition for if first and second pair are the same
+  #         secondPair1 == secondPair2 ->
+  #           if c > f do
+  #             IO.inspect(hand1)
+  #           else
+  #             IO.inspect(hand2)
+  #           end
+  #         secondPair1 < secondPair2 -> IO.inspect(hand2)
+  #       end
+  #     firstPair1 < firstPair2 -> IO.inspect(hand2)
+  #   end
 
-  end
+  # end
 
 
   # need to add scenario when ace is the highest
@@ -558,7 +609,7 @@ defmodule Poker do
     lst2 = Enum.chunk_by(lst2, fn x -> x end)
     lst2 = Enum.sort_by(lst2, &length/1, :desc)
 
-    # IO.inspect(lst1, charlists: :as_lists)
+    # IO.sinspect(lst1, charlists: :as_lists)
     # IO.inspect(lst2, charlists: :as_lists)
 
     a = hd(lst1)
@@ -577,9 +628,9 @@ defmodule Poker do
         end
       hd(a) < hd(c) -> IO.inspect(hand2)
     end
-
   end
 
+<<<<<<< HEAD
   # need to add scenario when ace is the highest
   def tie_highCard(hand1, hand2) do
     firstVal1 = getHighestRank(hand1, [])
@@ -643,3 +694,9 @@ IO.puts(Poker.highCard([14, 15, 16, 17, 1]))
 # Poker.tie_onePair([39,52,6,38,7], [26,13,11,31,1])
 # Poker.tie_highCard([39,50,6,38,7], [1,26,6,31,33])
 # IO.puts(Poker.checkSequenceV1([1, 2, 5, 4, 3]))
+=======
+<<<<<<< HEAD
+=======
+end
+>>>>>>> 1eae349d4fcd96ed9e1974061f2b9883b802f95a
+>>>>>>> f3bcb907a8da5b9b817f585c32c0c144a38c5a67
