@@ -164,7 +164,7 @@ end
         Enum.empty?(four)==false -> four
         four == [] -> false
       end
-    ans|> inspect(charlists: :as_lists)
+    ans
   end
 
 
@@ -181,8 +181,8 @@ end
   
     ans =
       cond do
-        a or b== true -> hand|> inspect(charlists: :as_lists)
-        a or c== true -> hand|> inspect(charlists: :as_lists)
+        a or b== true -> hand
+        a or c== true -> hand
         a or b == false -> false
         a or c == false -> false
       end
@@ -219,22 +219,39 @@ end
     check = sflush and 1 in hand
     ans =
     cond do
-      check ==true -> hand|> inspect(charlists: :as_lists)
+      check ==true -> hand
       check ==false -> false
     end
     ans
   end
 
+ 
   def fullHouse(hand) do
     lst = handToNum(hand)
-    lst = Enum.chunk_by(lst, fn x -> x end)
-    a = Enum.count(hd(lst))
-    b = Enum.count(hd(tl(lst)))
-    IO.puts(hd lst)
-    cond1 = a == 2 and b == 3
-    cond2 = a == 3 and b == 2
-    cond1 or cond2
+    dup = Enum.chunk_by(lst, fn x -> x end)
+    three = Enum.reject(dup, fn x -> Enum.count(x) < 3 end)
+    build = recurHighRanks(three,hd three)
+    setup = 
+    cond do
+      Enum.count(build)!=3 -> hd Enum.chunk_every(build,3)
+      Enum.count(build)==3 -> build
+    end
+    house = setup
+    temp = lst -- house
+  
+    duptemp = Enum.chunk_every(temp, 2)
+    dubtemp = Enum.reject(duptemp, fn x -> Enum.count(x) != 2 end)
+    eq = equalPairs(dubtemp,[])
+    pair = 
+     cond do
+       Enum.count(eq)==1 -> List.flatten(eq)
+       Enum.count(eq)!= 1-> recurHighRanks(eq,hd eq)
+     end
+    house = house ++ pair
+  
+    house|> inspect(charlists: :as_lists)
   end
+
 
   def straight(hand) do
     num = handToNum(hand)
@@ -630,7 +647,6 @@ end
     end
   end
 
-<<<<<<< HEAD
   # need to add scenario when ace is the highest
   def tie_highCard(hand1, hand2) do
     firstVal1 = getHighestRank(hand1, [])
