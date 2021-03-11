@@ -615,7 +615,7 @@ end
   #   hand2 = hd tl setup
   #   IO.inspect(hand2)
 
-  # end
+  # endg
 
 end
 IO.inspect(Poker.handToNum( [27, 45, 3,  48, 44, 43, 41, 33, 12 ]))
