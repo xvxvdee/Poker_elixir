@@ -235,31 +235,34 @@ end
     ans
   end
 
- 
   def fullHouse(hand) do
     lst = handToNum(hand)
     dup = Enum.chunk_by(lst, fn x -> x end)
-    three = Enum.reject(dup, fn x -> Enum.count(x) < 3 end)
-    build = recurHighRanks(three,hd three)
-    setup = 
-    cond do
-      Enum.count(build)!=3 -> hd Enum.chunk_every(build,3)
-      Enum.count(build)==3 -> build
+    mainCheck = 3 in (for x <- dup, do: Enum.count(x))
+    if mainCheck == false do
+       mainCheck
+    else  
+      three = Enum.reject(dup, fn x -> Enum.count(x) < 3 end)
+      build = recurHighRanks(three,hd three)
+      setup = 
+      cond do
+        Enum.count(build)!=3 -> hd Enum.chunk_every(build,3)
+        Enum.count(build)==3 -> build
+      end
+      house = setup
+      temp = lst -- house
+  
+      duptemp = Enum.chunk_every(temp, 2)
+      dubtemp = Enum.reject(duptemp, fn x -> Enum.count(x) != 2 end)
+      eq = equalPairs(dubtemp,[])
+      pair = 
+      cond do
+        Enum.count(eq)==1 -> List.flatten(eq)
+        Enum.count(eq)!= 1-> recurHighRanks(eq,hd eq)
+      end
+      house = house ++ pair
+      house
     end
-    house = setup
-    temp = lst -- house
-  
-    duptemp = Enum.chunk_every(temp, 2)
-    dubtemp = Enum.reject(duptemp, fn x -> Enum.count(x) != 2 end)
-    eq = equalPairs(dubtemp,[])
-    pair = 
-     cond do
-       Enum.count(eq)==1 -> List.flatten(eq)
-       Enum.count(eq)!= 1-> recurHighRanks(eq,hd eq)
-     end
-    house = house ++ pair
-  
-    house|> inspect(charlists: :as_lists)
   end
 
 
