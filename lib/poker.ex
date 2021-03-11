@@ -593,31 +593,6 @@ end
   #       end
   #     firstVal1 < firstVal2 -> IO.inspect(hand2)
   #   end
-
-<<<<<<< HEAD
-  #   IO.puts(firstVal1)
-  #   IO.puts(secondVal1)
-  #   IO.puts(firstVal2)
-  #   IO.puts(secondVal2)
-=======
-    # IO.puts(firstVal1)
-    # IO.puts(secondVal1)
-    # IO.puts(firstVal2)
-    # IO.puts(secondVal2)
->>>>>>> 8cb5c6904adc3de4d519d33e41c49476bb383e9f
-    # lst1 = handToNum(hand1)
-    # lst1 = Enum.sort(lst1)
-    # lst1 = Enum.chunk_by(lst1, fn x -> x end)
-    # lst1 = Enum.sort_by(lst1, &length/1, :desc)
-
-    # lst2 = handToNum(hand2)
-    # lst2 = Enum.sort(lst2)
-    # lst2 = Enum.chunk_by(lst2, fn x -> x end)
-    # lst2 = Enum.sort_by(lst2, &length/1, :desc)
-
-    # IO.inspect(lst1, charlists: :as_lists)
-    # IO.inspect(lst2, charlists: :as_lists)
-  # end
   
   # def helper([],hand1,hand2,_count), do: [hand1,hand2]
   # def helper(lst,hand1,hand2,count)do
