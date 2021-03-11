@@ -119,7 +119,7 @@ defmodule Poker do
   end
 
   def finalHand(hand) do
-    setup = for n <- hand, do: "#{to_string(n)}#{checkSuit(n)}"
+    setup = for n <- hand, do: "#{to_string(checkNum(n))}#{checkSuit(n)}"
     setup |> inspect(charlists: :as_lists)
   end
 
@@ -131,14 +131,14 @@ defmodule Poker do
     # takes in hand and returns true if values in the hand have the same suit
   end
 
-  # def getDuplicates([],_element,lst), do: lst--[nil]|> inspect(charlists: :as_lists)
-  # def getDuplicates(hand,element,lst) do
-  #   if element != hd hand do
-  #     getDuplicates(hand -- [hd hand],element,lst)      
-  #   else
-  #     getDuplicates(hand -- [hd hand],element,lst ++ [hd hand])     
-  #   end 
-  # end
+  def getDuplicates([],_element,lst), do: lst--[nil]|> inspect(charlists: :as_lists)
+  def getDuplicates(hand,element,lst) do
+    if element != hd hand do
+      getDuplicates(hand -- [hd hand],element,lst)      
+    else
+      getDuplicates(hand -- [hd hand],element,lst ++ [hd hand])     
+    end 
+  end
 
   # Check hand without Ace in the middle of it
   def checkSequenceV1(hand) do
@@ -152,7 +152,7 @@ defmodule Poker do
   end
 
   # Check hand without Ace in the middle of it
-  def checkSequenceV1(hand) do
+  def checkSequenceV2(hand) do
     # hand = Enum.sort(hand)
     lst = handToNum(hand)
     temp = Enum.chunk_every(lst, 2, 1, :discard)
@@ -405,6 +405,8 @@ defmodule Poker do
   end
 
   # Tie methods
+
+  #Four of a kind tie
   def tie_fourkind(hand1, hand2, type) do
     four1 = fourOfAKind(hand1)
     four2 = fourOfAKind(hand2)
@@ -413,134 +415,42 @@ defmodule Poker do
 
     if type == 1 do
       high = getHighestRank([getHighestRank(four1, []), getHighestRank(four2, [])], [])
-
       win =
         cond do
           high in four1 -> four1
           high in four2 -> four2
         end
-
       IO.puts(win |> inspect(charlists: :as_lists))
     end
 
     if type == 2 do
       high = getHighestRank([getHighestRank([hd(lst1)], []), getHighestRank([hd(lst2)], [])], [])
-
       win =
         cond do
           high in lst1 -> lst1
           high in lst2 -> lst2
         end
-
       win |> inspect(charlists: :as_lists)
     end
   end
 
   # FullHouse Tie
-  def tie_fullhouse(hand1, hand2, _type) do
-    test = for n <- hand1, do: getDuplicates(hand1, n, [])
-    test = Enum.uniq(test)
-    test |> inspect(charlists: :as_lists)
-    hd(test)
-
-    # lst1 = handToNum(hand1)
-    # lst1 = Enum.chunk_by(lst1, fn x -> x end)
-    # lst2 = handToNum(hand2)
-    # lst2 = Enum.chunk_by(lst2, fn x -> x end)
-    # a = hd(lst1)
-    # b = hd(tl(lst1))
-    # c = hd(lst2)
-    # d = hd(tl(lst2))
-    # IO.puts(b|> inspect(charlists: :as_lists))
-    # if type == 1 do
-    #   check1 =
-    #     cond do
-    #       Enum.count(a)==3 -> a
-    #       Enum.count(b)==3 ->b
-    #     end
-    #     check2 =
-    #     cond do
-    #       Enum.count(c)==3 -> c
-    #       Enum.count(d)==3 ->d
-    #     end
-    #   rank =[getHighestRank(check1,[]),getHighestRank(check2,[])]
-    #   high = getHighestRank(rank,[])
-    #   if high in check1 do
-    #     IO.puts(check1|> inspect(charlists: :as_lists))
-    #   else
-    #     IO.puts(check2|> inspect(charlists: :as_lists))
-    #   end
-    # end
-    # if type == 2 do
-    #   check1 =
-    #   cond do
-    #     Enum.count(a)==2 -> a
-    #     Enum.count(b)==2 -> b
-    #   end
-    #   check2 =
-    #   cond do
-    #     Enum.count(c)==2 -> c
-    #     Enum.count(d)==2 ->d
-    #   end
-    #   rank =[getHighestRank(check1,[]),getHighestRank(check2,[])]
-    #   high = getHighestRank(rank,[])
-    #   if high in check1 do
-    #     IO.puts(check1)
-    #     IO.puts(check1|> inspect(charlists: :as_lists))
-    #   else
-    #     IO.puts(check2)
-    #     IO.puts(check2|> inspect(charlists: :as_lists))
-    #   end
-    # end
+  def tie_fullhouse(_hand1, _hand2, _type) do
+    IO.puts("in progress...")
   end
 
-  def tie_flush(hand1, hand2) do
-    if getHighestRank(hand1, []) != getHighestRank(hand2, []) do
-      high = getHighestRank([getHighestRank(hand1, []), getHighestRank(hand2, [])], [])
-
-      if high in hand1 do
-        IO.puts(hand1 |> inspect(charlists: :as_lists))
-      else
-        IO.puts(hand2 |> inspect(charlists: :as_lists))
-      end
+  #Flush/Straight/StraightFlush Tie
+  def tie_SFlush(hand1,hand2,res1,res2) do
+    if getHighestRank(hand1, []) == getHighestRank(hand2, []) do
+      tie_flush(hand1 -- [hd hand1], hand2 -- [hd hand2],res1,res2)
     else
-      high = getHighestRank([getHighestRank(hand1, []), getHighestRank(hand2, [])], [])
-      tie_flush(hand1 -- [high], hand2 -- [high])
-    end
-  end
-
-  def tie_flushStraight_helper1(hand1, hand2) do
-    if getHighestRank(hand1, []) != getHighestRank(hand2, []) do
-      high = getHighestRank([getHighestRank(hand1, []), getHighestRank(hand2, [])], [])
-
+      high = getHighestRank([getHighestRank([hd hand1], []), getHighestRank([hd hand2], [])], [])
       if high in hand1 do
-        hand1
+        IO.puts(res1 |> inspect(charlists: :as_lists))
       else
-        hand2
+        IO.puts(res2 |> inspect(charlists: :as_lists))
       end
-    else
-      high = getHighestRank([getHighestRank(hand1, []), getHighestRank(hand2, [])], [])
-      tie_flush(hand1 -- [high], hand2 -- [high])
     end
-  end
-
-  # WE MIGHT NEED THIS BUT NOT SURE.
-  # def tie_flushStraight_helper2(hand,result) do
-  #   if Enum.member?(hand,hd(result))==false do
-  #     false
-  #   else
-  #     if length(result)==0 or result -- [hd(result)] == [] do
-  #       true
-  #     else
-  #       tie_flushStraight_helper2(hand,result -- [hd(result)])
-  #     end
-  #   end
-  # end
-
-  # parameters should be passed in using hand_to_num
-  def tie_flushStraight(hand1, hand2) do
-    res = tie_flushStraight_helper1(hand1, hand2)
-    IO.puts(res |> inspect(charlists: :as_lists))
   end
 
   def tie_threeKind(hand1, hand2) do
@@ -715,7 +625,7 @@ end
 # IO.puts(Poker.threeOfAKind([11, 24, 5, 8, 50, 13, 2]))
 # IO.puts(Poker.twoPair([14, 13, 3, 16, 1, 11, 24]))
 # IO.puts(Poker.pair([14, 1, 16, 17, 2, 5, 31]))
-# IO.puts(Poker.tie_flushStraight([7,8,6,5,4],[7,10,3,5,4]))
+IO.puts(Poker.tie_SFlush([7,9,6,5,4],[7,9,6,3,4],[7,9,6,5,4],[7,9,6,3,4]))
 # IO.puts(Poker.finalHand([1,2,3,4,5]))
 # IO.inspect(Poker.tie_threeKind([2,15,4,5, 28], [5,31,4,2,18]))
 # Poker.tie_twoPair([2,15,4,17,7], [11,24,5,31,7])
