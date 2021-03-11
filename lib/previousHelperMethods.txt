@@ -1,5 +1,3 @@
-defmodule Poker do
-  # HELPER METHODS
 
   def checkSuit(num) do
     # Takes a number and returns its suit
@@ -79,12 +77,8 @@ defmodule Poker do
     ans
   end
 
-  # Used to find the highest rank of pairs, three of a kinds etc. 
-  # Example getHighRankRecursive([[2,2],[3,3]], [2,2])
-  # highest must be the head of the enumerable
-  def getHighRankRecursive([], highest), do: highest |> inspect(charlists: :as_lists)
-
-  def getHighRankRecursive(choices, highest) do
+  def recurHighRanks([], highest), do: highest |> inspect(charlists: :as_lists)
+  def recurHighRanks(choices, highest) do
     a = hd(choices)
     high = getHighestRank([getHighestRank(highest, []), getHighestRank(a, [])], [])
 
@@ -94,12 +88,10 @@ defmodule Poker do
         high in handToNum(highest) -> highest
       end
 
-    getHighRankRecursive(choices -- [a], ans)
+    recurHighRanks(choices -- [a], ans)
   end
 
-  # Helper method for pairs
   def equalPairs([], lst), do: lst
-
   def equalPairs(choices, lst) do
     a = hd(choices)
 
@@ -110,84 +102,72 @@ defmodule Poker do
     end
   end
 
-  # Needs to be fixed
+  def handToSuit(hand) do
+    suits = for n <- hand, do: checkSuit(n)
+    suits
+    # returns a list of just the hands suits
+  end
+
+  def handToNum(hand) do
+    num = for n <- hand, do: checkNum(n)
+    num
+    # returns a list of just the hands values (1-13)
+  end
+
   def finalHand(hand) do
     setup = for n <- hand, do: "#{to_string(checkNum(n))}#{checkSuit(n)}"
     setup |> inspect(charlists: :as_lists)
   end
 
-  # Returns a hand in the form [[rank,suit],[rank,suit],etc]
-  def transformHand(hand) do
-    transform = for n <- hand, do: [checkNum(n), to_string(checkSuit(n))]
-    transform = Enum.sort(Enum)
-    transform
+  def sameSuit(hand) do
+    lst = handToSuit(hand)
+    set = MapSet.new(lst)
+    len = String.length(Enum.join(set, ""))
+    len == 1
+    # takes in hand and returns true if values in the hand have the same suit
   end
 
-  # POKER METHODS
+  def getDuplicates([],_element,lst), do: lst--[nil]|> inspect(charlists: :as_lists)
+  def getDuplicates(hand,element,lst) do
+    if element != hd hand do
+      getDuplicates(hand -- [hd hand],element,lst)      
+    else
+      getDuplicates(hand -- [hd hand],element,lst ++ [hd hand])     
+    end 
+  end
 
-  # 1. Royal flush, straight flush, flush, straight, high card - Deandra
+  # Check hand without Ace in the middle of it
+  def checkSequenceV1(hand) do
+    # hand = Enum.sort(hand)
+    lst = handToNum(hand)
+    temp = Enum.chunk_every(lst, 2, 1, :discard)
+    check = for x <- temp, do: hd(tl(x)) - hd(x)
+    set = MapSet.new(check)
+    len = String.length(Enum.join(set, ""))
+    len == 1 and 1 in set
+  end
 
-  # Royal flush ------------------------------------------
-  # def royalFlush(hand) do
-  # end
+  # Check hand without Ace in the middle of it
+  def checkSequenceV2(hand) do
+    # hand = Enum.sort(hand)
+    lst = handToNum(hand)
+    temp = Enum.chunk_every(lst, 2, 1, :discard)
+    check = for x <- temp, do: hd(tl(x)) - hd(x)
+    checkTwo = for x <- temp, do: hd(x) - hd(tl(x))
+    set = MapSet.new(check)
+    set2 = MapSet.new(checkTwo)
+    len = String.length(Enum.join(set, ""))
+    len2 = String.length(Enum.join(set2, ""))
+    cond1 = len == 1 and 1 in set
+    cond2 = len2 == 1 and 1 in set2
 
-  # straight ----------------------------------------------
-  # def straight(hand) do
-  # end
+    ans =
+      cond do
+        cond1 == true -> true
+        cond2 == true -> true
+        cond1 == false -> false
+        cond2 == false -> false
+      end
 
-  #  flush -----------------------------------------------
-  # def flush(hand) do
-  # end
-
-  # straight Flush ----------------------------------------
-  # def straightFlush(hand) do
-  # end
-
-  # high card --------------------------------------------
-  # def highCard(hand) do
-  # end
-
-  #TIE CONDITIONS ----------------------------------------
-
-
-
-  #------------------------------------------------------
-
-  # 2. Four of a kind, Full house, Three of a kind, two pair, pair - Vanessa
-
-  #  Four of a kind--------------------------------------------
-
-  # def fourKind(hand) do
-  # end
-
-  # Full house ------------------------------------------------
-
-  # def fullHouse(hand) do
-  # end
-
-  # Three of a kind--------------------------------------------
-
-  # def threeKind(hand) do
-  # end
-
-  # two pair --------------------------------------------------
-
-  # def twoPair(hand) do
-  # end
-
-  # pair ------------------------------------------------------
-
-  # def pair(hand) do
-  # end
-
-  #TIE CONDITIONS ----------------------------------------------
-
-
-
-  #----------------------------------------------------
-  
-  # 3. deal method
-  
-  # def deal(cards) do
-  # end
-end
+    ans
+  end
