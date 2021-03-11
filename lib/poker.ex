@@ -91,6 +91,16 @@ def recurHighRanks(choices,highest)do
   recurHighRanks(choices -- [a],ans)
 end
 
+def equalPairs([],lst), do: lst 
+def equalPairs(choices,lst) do
+  a = hd choices
+  if Enum.count(Enum.uniq(a))==1 do
+    equalPairs(choices--[a],lst++[a])
+  else
+    equalPairs(choices--[a],lst)
+  end
+end
+
   def handToSuit(hand) do
     suits = for n <- hand, do: checkSuit(n)
     suits
@@ -227,13 +237,28 @@ end
 
   def fullHouse(hand) do
     lst = handToNum(hand)
-    lst = Enum.chunk_by(lst, fn x -> x end)
-    a = Enum.count(hd(lst))
-    b = Enum.count(hd(tl(lst)))
-    IO.puts(hd lst)
-    cond1 = a == 2 and b == 3
-    cond2 = a == 3 and b == 2
-    cond1 or cond2
+    dup = Enum.chunk_by(lst, fn x -> x end)
+    three = Enum.reject(dup, fn x -> Enum.count(x) < 3 end)
+    build = recurHighRanks(three,hd three)
+    setup = 
+    cond do
+      Enum.count(build)!=3 -> hd Enum.chunk_every(build,3)
+      Enum.count(build)==3 -> build
+    end
+    house = setup
+    temp = lst -- house
+  
+    duptemp = Enum.chunk_every(temp, 2)
+    dubtemp = Enum.reject(duptemp, fn x -> Enum.count(x) != 2 end)
+    eq = equalPairs(dubtemp,[])
+    pair = 
+     cond do
+       Enum.count(eq)==1 -> List.flatten(eq)
+       Enum.count(eq)!= 1-> recurHighRanks(eq,hd eq)
+     end
+    house = house ++ pair
+  
+    house|> inspect(charlists: :as_lists)
   end
 
   def straight(hand) do
@@ -629,8 +654,3 @@ end
       hd(a) < hd(c) -> IO.inspect(hand2)
     end
   end
-
-<<<<<<< HEAD
-=======
-end
->>>>>>> 1eae349d4fcd96ed9e1974061f2b9883b802f95a
