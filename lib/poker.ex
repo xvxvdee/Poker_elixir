@@ -19,10 +19,9 @@ defmodule Poker do
     ans
   end
 
-  def getHighestRank(hand, remove) do
+  def getHighestRank(hand) do
     lst = handToNum(hand)
-    lst = lst -- remove
-
+    
     high =
       cond do
         1 in lst -> 1
@@ -129,7 +128,8 @@ defmodule Poker do
     # returns a list of just the hands values (1-13)
   end
 
-  # POKER METHODS |> inspect(charlists: :as_lists)
+  # POKER METHODS  https://www.fgbradleys.com/et_poker.asp
+  #|> inspect(charlists: :as_lists)
 
   # 1. Royal flush, straight flush, flush, straight, high card - Deandra
 
@@ -150,8 +150,11 @@ defmodule Poker do
   # end
 
   # high card --------------------------------------------
-  # def highCard(hand) do
-  # end
+  def highCard(hand) do
+    card = getHighestRank(hand)
+    [1,card]|> inspect(charlists: :as_lists)
+
+  end
 
   #TIE CONDITIONS ----------------------------------------
 
@@ -209,3 +212,4 @@ defmodule Poker do
 end
 
 IO.puts(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
+IO.puts(Poker.highCard(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
