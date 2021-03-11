@@ -474,13 +474,6 @@ end
       hand2
     end
 
-    # IO.inspect(lst1)
-    # IO.inspect(lst2)
-    # IO.inspect(a)
-    # # IO.puts(b)
-    # IO.inspect(b)
-    # IO.puts(d)
-
   end
 
   # need to add scenario when ace is the highest
@@ -601,10 +594,17 @@ end
   #     firstVal1 < firstVal2 -> IO.inspect(hand2)
   #   end
 
+<<<<<<< HEAD
   #   IO.puts(firstVal1)
   #   IO.puts(secondVal1)
   #   IO.puts(firstVal2)
   #   IO.puts(secondVal2)
+=======
+    # IO.puts(firstVal1)
+    # IO.puts(secondVal1)
+    # IO.puts(firstVal2)
+    # IO.puts(secondVal2)
+>>>>>>> 8cb5c6904adc3de4d519d33e41c49476bb383e9f
     # lst1 = handToNum(hand1)
     # lst1 = Enum.sort(lst1)
     # lst1 = Enum.chunk_by(lst1, fn x -> x end)
