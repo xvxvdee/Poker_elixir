@@ -581,29 +581,3 @@ defmodule Poker do
   end
 
 end
-
-
-
-# IO.puts(Enum.member?(1..10,5))
-# IO.puts(Poker.checkNum(28))
-# IO.puts(Poker.getHighestRank([1,2,3,4,5],[6]))
-# IO.puts(Poker.fullHouse([10, 23, 36, 1, 14]))
-# IO.puts(Poker.fullHouse([10,23,33,1,14]))
-# IO.puts(Poker.sameSuit([5,6,7,8,9]))
-#  IO.puts(Poker.straightFlush([1,4,3,2,5]))
-# IO.puts(Poker.fourOfAKind([1, 14, 27, 40, 2]))
-# IO.puts(Poker.threeOfAKind([11, 24, 5, 8, 50, 13, 2]))
-# IO.puts(Poker.twoPair([14, 13, 3, 16, 1, 11, 24]))
-# IO.puts(Poker.pair([14, 1, 16, 17, 2, 5, 31]))
-IO.puts(Poker.highCard([14, 15, 16, 17, 1]))
-# IO.puts(Poker.tie_flushStraight([7,8,6,5,4],[7,10,3,5,4]))
-# IO.puts(Poker.finalHand([1,2,3,4,5]))
-# IO.inspect(Poker.tie_threeKind([2,15,4,5, 28], [5,31,4,2,18]))
-# Poker.tie_twoPair([2,15,4,17,7], [11,24,5,31,7])
-# Poker.tie_twoPair([2,15,4,17,7], [28,41,30,43,10])
-# Poker.tie_twoPair([2,15,4,17,7], [28,41,5,31,10])
-
-# Poker.tie_onePair([2,15,6,17,7], [26,13,11,31,1])
-# Poker.tie_onePair([39,52,6,38,7], [26,13,11,31,1])
-# Poker.tie_highCard([39,50,6,38,7], [1,26,6,31,33])
-# IO.puts(Poker.checkSequenceV1([1, 2, 5, 4, 3]))
