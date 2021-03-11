@@ -21,7 +21,7 @@ defmodule Poker do
 
   def getHighestRank(hand) do
     lst = handToNum(hand)
-    
+
     high =
       cond do
         1 in lst -> 1
@@ -85,7 +85,7 @@ defmodule Poker do
 
   def getHighRankRecursive(choices, highest) do
     a = hd(choices)
-    high = getHighestRank([getHighestRank(highest, []), getHighestRank(a, [])], [])
+    high = getHighestRank([getHighestRank(highest), getHighestRank(a)])
 
     ans =
       cond do
@@ -135,11 +135,29 @@ defmodule Poker do
 
   # Royal flush ------------------------------------------
   # def royalFlush(hand) do
+  #   opt1=[[10,'H'],[11,'H'],[12,'H'],[13,'H'],[1,'H']] 
+  #   opt2=[[10,'C'],[11,'C'],[12,'C'],[13,'C'],[1,'C']] 
+  #   opt3=[[10,'D'],[11,'D'],[12,'D'],[13,'D'],[1,'D']] 
+  #   opt4=[[10,'S'],[11,'S'],[12,'S'],[13,'S'],[1,'S']]
+    
+  #   # IO.puts(options)
+  #   # if options = true do
+  #   #   [10,hand]|> inspect(charlists: :as_lists)
+  #   # else
+  #   #   highCard(hand)|> inspect(charlists: :as_lists)
+  #   # end
   # end
 
-  # straight ----------------------------------------------
-  # def straight(hand) do
-  # end
+  #straight ----------------------------------------------
+  def straight(hand) do
+    # st = for x <- hand, do: hd(tl((x))) - hd(x)
+    # IO.puts(st)
+    IO.puts(hand|> inspect(charlists: :as_lists))
+    head = hd hand
+    IO.puts( head)
+    IO.puts(hd head)
+
+  end
 
   #  flush -----------------------------------------------
   # def flush(hand) do
@@ -205,11 +223,12 @@ defmodule Poker do
     hand2=[hd(tl(cards)), hd(tl(tl(tl(cards))))]
     cards = cards -- hand1
     cards = cards -- hand2
-    hand1 = Enum.sort(hand1 ++ cards)
-    hand2 = Enum.sort(hand2 ++ cards)
+    hand1 = transformHand(Enum.sort(hand1 ++ cards))
+    hand2 = transformHand(Enum.sort(hand2 ++ cards))
     [hand1,hand2]
   end
 end
 
 IO.puts(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
-IO.puts(Poker.highCard(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
+IO.puts(Poker.straight(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
+#IO.puts(Poker.royalFlush([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
