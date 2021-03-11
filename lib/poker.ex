@@ -200,24 +200,25 @@ end
   end
   
   def straightFlush(hand) do
+    st = straight(hand)
     suit = sameSuit(hand)
     num = handToNum(hand)
     seq = checkSequenceV1(num)
     seq2 = checkSequenceV2(num)
   
-    a = hd(num) != 1 and 1 in num
+    a = hd(num) != 1 and 1 in num #checks if ace at beginning -> false 1 is at the beginning -> true 1 is in middle
     b = a and seq2 and suit
-    c = not a and seq and suit
+    c = not a and seq and suit and st
   
     ans =
-      cond do
-        a or b== true -> hand|> inspect(charlists: :as_lists)
-        a or c== true -> hand|> inspect(charlists: :as_lists)
-        a or b == false -> false
-        a or c == false -> false
-      end
+    cond do
+      b or a== true -> false
+      c == false -> false
+      c == true -> hand|> inspect(charlists: :as_lists)
   
+    end
     ans
+  
   end
 
   def royalFlush(hand) do
@@ -261,6 +262,7 @@ end
         Enum.count(eq)!= 1-> recurHighRanks(eq,hd eq)
       end
       house = house ++ pair
+  
       house
     end
   end
