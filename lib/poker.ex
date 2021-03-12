@@ -281,7 +281,6 @@ defmodule Poker do
       straights=Enum.chunk_every(straights,5)
       checkSequence = for x <- straights, do: inSequence(x)
       build = Enum.reject(checkSequence, fn x -> x==false end)
-
       
       ans = 
       cond do
