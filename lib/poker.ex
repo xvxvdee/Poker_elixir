@@ -112,6 +112,7 @@ defmodule Poker do
       end
     getMultipleRankRecursive(choices --[a] ,ans)
   end
+
   # Used to find the highest rank of pairs, three of a kinds etc.
   # Example getHandHighRank([[2,2],[3,3]], [2,2])
   # highest must be the head of the enumerable
@@ -165,7 +166,7 @@ defmodule Poker do
     same = String.length(Enum.join(setSuits, ""))
     condition = same == 1 
     if condition == true do
-      hand|> inspect(charlists: :as_lists)
+      hand
     else
       false
     end
@@ -223,31 +224,34 @@ defmodule Poker do
       Enum.count(build)==1 ->  [5,hd build]|> inspect(charlists: :as_lists)
       Enum.count(build)>1 -> [5, getMultipleRankRecursive(build, hd build)]|> inspect(charlists: :as_lists)
     end
-    # if Enum.count(build)==1 do
-    #   [5,hd build]|> inspect(charlists: :as_lists)
-    # else
-    #   IO.puts(build|> inspect(charlists: :as_lists))
-    #   highCard(hand)
-    #   #Add condition len(build)>1
-    # end
     ans
-
   end
 
   #  flush -----------------------------------------------
-  def flush(hand) do #Consider the fact that the suits may be scattered
-    flushes = Enum.chunk_every(hand,5,1, :discard)
-    checkSuits = for x <- flushes, do: checkSameSuit(x)
-    build = Enum.reject(checkSuits, fn x -> x==false end)
-
-    if Enum.count(build)==1 do
-      [5,hd build]|> inspect(charlists: :as_lists)
+  # Buil
+  def bestFlush([],best), do: best --[nil]
+  def bestFlush(hand,best) do
+    if Enum.count(best)==6 do
+      bestFlush([],best)
     else
-      highCard(hand)
-      #Add condition len(build)>1
+    high=getHandHighRank(hand,hd hand)
+    bestFlush(hand--[high], best++[high])
     end
+  end
 
-    # IO.puts (flushes |> inspect(charlists: :as_lists))
+  def flush(hand) do #Consider the fact that the suits may be scattered
+    sorted = Enum.sort(hand, &(tl(&1) == tl(&2)))
+    checkflushes = Enum.chunk_by(sorted, fn x -> tl x end)
+    build = Enum.reject(checkflushes, fn x -> Enum.count(x)<5 end)
+    flushes= for x <- build, do: bestFlush(x,[nil])
+    
+    ans = 
+    cond do
+      Enum.count(build)==0 ->  highCard(hand)
+      Enum.count(build)==1 ->[6, hd flushes]|> inspect(charlists: :as_lists)
+      Enum.count(build)>1 -> [6, getMultipleRankRecursive(flushes, hd flushes)]|> inspect(charlists: :as_lists)
+    end
+    ans
   end
 
   # straight Flush ----------------------------------------
@@ -330,9 +334,9 @@ defmodule Poker do
   end
 end
 
-
+#IO.puts(Poker.bestFlush([[3, "C"], [6, "C"], [4, "C"], [9, "C"], [10, "C"],[11, "C"]],[nil]))
 #IO.puts(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
-#IO.puts(Poker.flush([[3, "C"], [6, "C"], [9, "C"], [9, "C"], [10, "C"], [11, "H"], [11, "S"]]))
+IO.puts(Poker.flush([[3, "C"], [6, "C"], [4, "C"], [9, "C"], [10, "C"], [11, "C"], [11, "S"]]))
 #IO.puts(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
 #IO.puts(Poker.getHandHighRank([[[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]], [[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]]], ))
 
@@ -340,7 +344,7 @@ end
 
 # IO.inspect(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
 #IO.puts(Poker.flush(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
-IO.puts(Poker.straight([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
+#IO.puts(Poker.straight([[1, "C"], [8, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
 #IO.puts(Poker.getMultipleRankRecursive([[[3, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]], [[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]], [[9, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]]],[[3, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]]))
 # IO.inspect(Poker.twoPair(hd Poker.deal([ 40, 52, 46, 11, 48, 27, 24, 33, 37 ])))
 #IO.puts(Poker.royalFlush([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
