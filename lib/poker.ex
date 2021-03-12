@@ -99,10 +99,10 @@ defmodule Poker do
   end
 
   # Used to find the highest rank of pairs, three of a kinds etc.
-  # Example getHighRankRecursive([[2,2],[3,3]], [2,2])
+  # Example getHandHighRank([[2,2],[3,3]], [2,2])
   # highest must be the head of the enumerable
-  def getHighRankRecursive([], highest), do: highest
-  def getHighRankRecursive(choices, highest) do
+  def getHandHighRank([], highest), do: highest
+  def getHandHighRank(choices, highest) do
     a = hd(hd (choices))
     b = hd (choices)
 
@@ -113,12 +113,11 @@ defmodule Poker do
         high in [a] -> b
         high in [hd highest] -> highest
       end
-    getHighRankRecursive(choices -- [hd choices], ans)
+    getHandHighRank(choices -- [hd choices], ans)
   end
 
   # Helper method for pairs
   def equalPairs([], lst), do: lst
-
   def equalPairs(choices, lst) do
     a = hd(choices)
 
@@ -207,6 +206,7 @@ defmodule Poker do
     if Enum.count(build)==1 do
       [5,hd build]|> inspect(charlists: :as_lists)
     else
+      IO.puts(build|> inspect(charlists: :as_lists))
       highCard(hand)
       #Add condition len(build)>1
     end
@@ -218,7 +218,6 @@ defmodule Poker do
     flushes = Enum.chunk_every(hand,5,1, :discard)
     checkSuits = for x <- flushes, do: checkSameSuit(x)
     build = Enum.reject(checkSuits, fn x -> x==false end)
-    IO.puts (lst |> inspect(charlists: :as_lists))
 
     if Enum.count(build)==1 do
       [5,hd build]|> inspect(charlists: :as_lists)
@@ -236,7 +235,7 @@ defmodule Poker do
 
   # high card --------------------------------------------
   def highCard(hand) do
-    card = getHighRankRecursive(hand, hd(hand))
+    card = getHandHighRank(hand, hd(hand))
     [1,card]|> inspect(charlists: :as_lists)
 
   end
@@ -282,7 +281,7 @@ defmodule Poker do
     lst2 = equalPairs(lst2, [])
     # cards = for x <- lst2, do: [hd(hd(x)), hd(hd(tl(x)))]
     [2, hd(lst2)]
-    # lst = Enum.take_while(lst2, fn x -> hd(hd(x)) == hd(hd(getHighRankRecursive(cards, hd(cards)))) end)
+    # lst = Enum.take_while(lst2, fn x -> hd(hd(x)) == hd(hd(getHandHighRank(cards, hd(cards)))) end)
     # lst = [hd(hd(lst))] ++ [hd(tl(hd(lst)))]
     # [2, lst]
   end
@@ -312,15 +311,15 @@ end
 
 
 #IO.puts(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
-IO.puts(Poker.flush([[3, "C"], [6, "C"], [9, "C"], [9, "C"], [10, "C"], [11, "H"], [11, "S"]]))
+#IO.puts(Poker.flush([[3, "C"], [6, "C"], [9, "C"], [9, "C"], [10, "C"], [11, "H"], [11, "S"]]))
 #IO.puts(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
-#IO.puts(Poker.getHighRankRecursive([[1, "H"], [1, "S"], [7, "H"], [7, "S"]], [1,"H"] ))
+IO.puts(Poker.getHandHighRank([[[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]], [[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]]], ))
 
 #IO.puts(Poker.checkSameSuit([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
 
 # IO.inspect(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
 #IO.puts(Poker.flush(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
-#IO.puts(Poker.straight([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
+IO.puts(Poker.straight([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
 
 # IO.inspect(Poker.twoPair(hd Poker.deal([ 40, 52, 46, 11, 48, 27, 24, 33, 37 ])))
 #IO.puts(Poker.royalFlush([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
