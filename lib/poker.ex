@@ -97,7 +97,21 @@ defmodule Poker do
 
     ans
   end
-
+  # Used to find the highest rank between hands
+  # Example getHandHighRank([[[2,2],[3,3]],[[4,4],[5,5]]])
+  # highest must be the head of the enumerable
+  def getMultipleRankRecursive([],highest), do: highest
+  def getMultipleRankRecursive(choices,highest) do
+    a = hd(choices)
+    b = a
+    high = getHandHighRank([getHandHighRank(a, hd a),getHandHighRank(highest, hd highest)],getHandHighRank(a, hd a))
+    ans =
+      cond do
+        high in a -> b
+        high in highest -> highest
+      end
+    getMultipleRankRecursive(choices --[a] ,ans)
+  end
   # Used to find the highest rank of pairs, three of a kinds etc.
   # Example getHandHighRank([[2,2],[3,3]], [2,2])
   # highest must be the head of the enumerable
@@ -203,13 +217,20 @@ defmodule Poker do
     checkSequence = for x <- straights, do: inSequence(x)
     build = Enum.reject(checkSequence, fn x -> x==false end)
 
-    if Enum.count(build)==1 do
-      [5,hd build]|> inspect(charlists: :as_lists)
-    else
-      IO.puts(build|> inspect(charlists: :as_lists))
-      highCard(hand)
-      #Add condition len(build)>1
+    ans = 
+    cond do
+      Enum.count(build)==0 ->  highCard(hand)
+      Enum.count(build)==1 ->  [5,hd build]|> inspect(charlists: :as_lists)
+      Enum.count(build)>1 -> [5, getMultipleRankRecursive(build, hd build)]|> inspect(charlists: :as_lists)
     end
+    # if Enum.count(build)==1 do
+    #   [5,hd build]|> inspect(charlists: :as_lists)
+    # else
+    #   IO.puts(build|> inspect(charlists: :as_lists))
+    #   highCard(hand)
+    #   #Add condition len(build)>1
+    # end
+    ans
 
   end
 
@@ -313,14 +334,14 @@ end
 #IO.puts(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
 #IO.puts(Poker.flush([[3, "C"], [6, "C"], [9, "C"], [9, "C"], [10, "C"], [11, "H"], [11, "S"]]))
 #IO.puts(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
-IO.puts(Poker.getHandHighRank([[[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]], [[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]]], ))
+#IO.puts(Poker.getHandHighRank([[[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]], [[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]]], ))
 
 #IO.puts(Poker.checkSameSuit([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
 
 # IO.inspect(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
 #IO.puts(Poker.flush(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
 IO.puts(Poker.straight([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
-
+#IO.puts(Poker.getMultipleRankRecursive([[[3, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]], [[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]], [[9, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]]],[[3, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]]))
 # IO.inspect(Poker.twoPair(hd Poker.deal([ 40, 52, 46, 11, 48, 27, 24, 33, 37 ])))
 #IO.puts(Poker.royalFlush([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
 
