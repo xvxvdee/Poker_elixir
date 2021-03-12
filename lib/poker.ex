@@ -102,7 +102,6 @@ defmodule Poker do
   # Example getHighRankRecursive([[2,2],[3,3]], [2,2])
   # highest must be the head of the enumerable
   def getHighRankRecursive([], highest), do: highest
-
   def getHighRankRecursive(choices, highest) do
     a = hd(hd (choices))
     b = hd (choices)
@@ -128,6 +127,34 @@ defmodule Poker do
 
     else
       equalPairs(choices -- [a], lst ++ [a])
+    end
+  end
+
+  # Checks if hand is in sequence
+  def inSequence(hand) do
+    num = for x <- hand, do: hd x # collecting numbers
+    setupPairs = Enum.chunk_every(num, 2, 1, :discard)
+    adj = for x <- setupPairs, do: hd(tl(x)) - hd(x) #Subtracting adjcant elements
+    adj =  MapSet.new(adj)
+    strt = String.length(Enum.join(adj, ""))
+    condition = strt == 1 and 1 in adj
+    if condition == true do
+      hand
+    else
+      false
+    end
+  end
+
+  # Checks if hand is in the same suit
+  def checkSameSuit(hand) do
+    suits = for x <- hand, do: tl x # collecting suits
+    setSuits =  MapSet.new(suits)
+    same = String.length(Enum.join(setSuits, ""))
+    condition = same == 1 
+    if condition == true do
+      hand|> inspect(charlists: :as_lists)
+    else
+      false
     end
   end
 
@@ -171,65 +198,37 @@ defmodule Poker do
   # end
 
   #straight ----------------------------------------------
-  def straightHelper(hand) do
-    num = for x <- hand, do: hd x # collecting numbers
-    setupPairs = Enum.chunk_every(num, 2, 1, :discard)
-    adj = for x <- setupPairs, do: hd(tl(x)) - hd(x) #Subtracting adjcant elements
-    #IO.puts(adj|> inspect(charlists: :as_lists))
-    adj =  MapSet.new(adj)
-
-    strt = String.length(Enum.join(adj, ""))
-    condition = strt == 1 and 1 in adj
-    if condition == true do
-      hand
-    else
-      false
-    end
-
-  end
 
   def straight(hand) do #FIX LATER
-    five = Enum.chunk_every(hand,5,1, :discard) # chunk into fives
-    check = for x <- five, do: straightHelper(x)
-    build = Enum.reject(check, fn x -> x==false end)
+    straights = Enum.chunk_every(hand,5,1, :discard) # chunk into fives
+    checkSequence = for x <- straights, do: inSequence(x)
+    build = Enum.reject(checkSequence, fn x -> x==false end)
 
     if Enum.count(build)==1 do
       [5,hd build]|> inspect(charlists: :as_lists)
     else
       highCard(hand)
-
+      #Add condition len(build)>1
     end
-
-    # four = Enum.reject(b, fn x -> Enum.count(x) < 4 end)
-
-
-
-
-    # num = for x <- five, do: hd x # collecting numbers
-    # setupPairs = Enum.chunk_every(num, 2, 1, :discard)
-    # adj = for x <- setupPairs, do: hd(tl(x)) - hd(x) #Subtracting adjcant elements
-    # IO.inspect(adj|> inspect(charlists: :as_lists))
-    # adj =  MapSet.new(adj)
-    # strt = String.length(Enum.join(adj, ""))
-    # condition =strt == 1 and 1 in adj
-    # IO.puts(condition)
-    # res =
-    # cond do
-    #   condition == true -> [5,five]
-    #   condition == false -> highCard(hand)
-    # end
-    # res|> inspect(charlists: :as_lists)
-    # # IO.puts(num|> inspect(charlists: :as_lists))
-    # IO.puts(hand|> inspect(charlists: :as_lists))
-    # # IO.puts(hd hd hand)
-    # # IO.puts(hd hd tl hand)
 
   end
 
   #  flush -----------------------------------------------
-  # def flush(hand) do
+  def flush(hand) do #Consider the fact that the suits may be scattered
+    flushes = Enum.chunk_every(hand,5,1, :discard)
+    checkSuits = for x <- flushes, do: checkSameSuit(x)
+    build = Enum.reject(checkSuits, fn x -> x==false end)
+    IO.puts (lst |> inspect(charlists: :as_lists))
 
-  # end
+    if Enum.count(build)==1 do
+      [5,hd build]|> inspect(charlists: :as_lists)
+    else
+      highCard(hand)
+      #Add condition len(build)>1
+    end
+
+    # IO.puts (flushes |> inspect(charlists: :as_lists))
+  end
 
   # straight Flush ----------------------------------------
   # def straightFlush(hand) do
@@ -237,8 +236,6 @@ defmodule Poker do
 
   # high card --------------------------------------------
   def highCard(hand) do
-    # num = for x <- hand, do: hd x
-    # suit = for x <- hand, do: tl x
     card = getHighRankRecursive(hand, hd(hand))
     [1,card]|> inspect(charlists: :as_lists)
 
@@ -315,15 +312,15 @@ end
 
 
 #IO.puts(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
-# IO.puts(Poker.getHighRankRecursive([[3, "C"], [6, "S"], [9, "C"], [9, "S"], [10, "S"], [11, "C"], [11, "S"]], [3,"C"] ))
+IO.puts(Poker.flush([[3, "C"], [6, "C"], [9, "C"], [9, "C"], [10, "C"], [11, "H"], [11, "S"]]))
 #IO.puts(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
-IO.puts(Poker.getHighRankRecursive([[1, "H"], [1, "S"], [7, "H"], [7, "S"]], [1,"H"] ))
+#IO.puts(Poker.getHighRankRecursive([[1, "H"], [1, "S"], [7, "H"], [7, "S"]], [1,"H"] ))
 
-#IO.puts(Poker.royalFlush([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
+#IO.puts(Poker.checkSameSuit([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
 
 # IO.inspect(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
-# IO.puts(Poker.straight(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
-# IO.puts(Poker.straight([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
+#IO.puts(Poker.flush(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
+#IO.puts(Poker.straight([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
 
 # IO.inspect(Poker.twoPair(hd Poker.deal([ 40, 52, 46, 11, 48, 27, 24, 33, 37 ])))
 #IO.puts(Poker.royalFlush([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
