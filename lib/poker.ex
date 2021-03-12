@@ -321,10 +321,11 @@ defmodule Poker do
   def fourKind(hand) do
     lst = Enum.chunk_by(hand, fn x -> hd(x) end)
     four = Enum.reject(lst, fn x -> Enum.count(x) != 4 end)
+    # IO.inspect(four)
     if four == [] do
       false
     else
-      [4, four]
+      [4, hd four]
     end
 
     # cond do
@@ -346,6 +347,7 @@ defmodule Poker do
     else
       false
     end
+
   end
 
   # Three of a kind--------------------------------------------
@@ -370,6 +372,7 @@ defmodule Poker do
     lst = Enum.chunk_by(hand, fn x -> hd(x) end)
     lst2 = for x <- lst, do: x
     lst2 = equalPairs(lst2, [])
+
     if lst2 == [] do
       false
     else
@@ -384,17 +387,9 @@ defmodule Poker do
       else
         [3, hd(a) ++ b]
       end
+
     end
-    # cards = for x <- lst2, do: [hd(hd(x)), hd(hd(tl(x)))]
 
-    # hd(hd(lst2))
-    # lst2
-    # b
-
-
-    # lst = Enum.take_while(lst2, fn x -> hd(hd(x)) == hd(hd(getHighRankRecursive(cards, hd(cards)))) end)
-    # lst = [hd(hd(lst))] ++ [hd(tl(hd(lst)))]
-    # cards |> inspect(charlists: :as_lists)
   end
 
   # pair ------------------------------------------------------
@@ -403,27 +398,60 @@ defmodule Poker do
 
     lst = Enum.chunk_by(hand, fn x -> hd(x) end)
     lst2 = Enum.reject(lst, fn x -> Enum.count(x) != 2 end)
-
-    # lst2 = equalPairs(lst, []) #FIX - EQUALPAIR RETURNS A TRIPLET AND NOT PAIR
-    # IO.inspect(lst2)
     if lst2 == [] do
       false
     else
       [2, hd(lst2)]
     end
 
-    # lst2 = for x <- lst, do: x
-
-    # cards = for x <- lst2, do: [hd(hd(x)), hd(hd(tl(x)))]
-    # lst = Enum.take_while(lst2, fn x -> hd(hd(x)) == hd(hd(getHandHighRank(cards, hd(cards)))) end)
-    # lst = [hd(hd(lst))] ++ [hd(tl(hd(lst)))]
-    # [2, lst]
   end
 
 
   #TIE CONDITIONS ----------------------------------------------
 
+  # Four of a Kind Tie -----------------------------------------
+  def tie_fourKind(hand1, hand2) do
+    getMultipleRankRecursive([(hd hand1), (hd hand2)] , hd hand1)
+  end
 
+  # Full House Tie ---------------------------------------------
+  def tie_fullHouse(hand1, hand2) do
+    lst = Enum.chunk_by(hd(hand1), fn x -> hd(x) end)
+    lst2 = Enum.chunk_by(hd(hand2), fn x -> hd(x) end)
+
+    if hd(hd(hd(lst))) == hd(hd(hd(lst2))) do
+      x = getMultipleRankRecursive([(hd tl lst), (hd tl lst2)] , hd tl lst)
+      if x == (hd tl lst) do
+        hand1
+      else
+        hand2
+      end
+
+    else
+      x = getMultipleRankRecursive([(hd lst), (hd lst2)] , hd tl lst)
+      if x == (hd lst) do
+        hand1
+      else
+        hand2
+      end
+    end
+
+  end
+
+   # Three of a Kind Tie -----------------------------------------
+  # def tie_threeKind(hand1, hand2) do
+
+  # end
+
+  # Two Pair Tie ------------------------------------------------
+  # def tie_twoPair(hand1, hand2) do
+
+  # end
+
+   # Pair Tie -----------------------------------------------------
+  # def tie_pair(hand1, hand2) do
+
+  # end
 
   # ----------------------------------------------------
 
@@ -440,6 +468,7 @@ defmodule Poker do
     hand1 = transformHand(Enum.sort(hand1 ++ cards))
     hand2 = transformHand(Enum.sort(hand2 ++ cards))
     [hand1,hand2]
+
   end
 end
 
@@ -450,18 +479,36 @@ IO.puts(Poker.higherTopCard([[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]],[
 # IO.inspect(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
 #IO.puts(Poker.straight(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
 
-#IO.puts(Poker.straight([[9, "C"], [8, "C"], [7, "C"], [6, "C"], [5, "C"], [4, "C"], [3, "C"]]))
+# IO.puts(Poker.straight(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
+# IO.puts(Poker.straight([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
 
+# IO.inspect(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
+# IO.puts(Poker.straight(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
+#IO.puts(Poker.straight([[9, "C"], [8, "C"], [7, "C"], [6, "C"], [5, "C"], [4, "C"], [3, "C"]]))
+# IO.puts(Poker.straightFlush(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
+#IO.puts(Poker.straightFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [7, "H"]]))
+
+# IO.puts(Poker.getMultipleRankRecursive([[[3, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]], [[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]], [[9, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]]],[[3, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]]))
+
+#IO.puts(Poker.getMultipleRankStraight([[[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]],[[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]]],[[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]]))
+
+#IO.puts(Poker.royalFlush([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
+
+# Vanessa's Testers
+# IO.inspect(Poker.deal([ 40, 52, 46, 11, 48, 27, 24, 33, 37 ]))
+# IO.inspect(Poker.twoPair(hd Poker.deal([ 40, 52, 46, 11, 48, 27, 24, 33, 37 ])))
+# IO.inspect(Poker.threeKind(hd tl Poker.deal([ 40, 52, 46, 11, 48, 27, 24, 33, 37 ])))
 #IO.inspect(Poker.twoPair(hd Poker.deal([ 40, 52, 46, 11, 48, 27, 24, 33, 37 ])))
 # IO.inspect(Poker.pair(hd Poker.deal([ 40, 52, 46, 11, 48, 27, 29, 32, 37 ])))
 # IO.inspect(Poker.threeKind(hd Poker.deal([ 17, 31, 30, 51, 44, 43, 1, 14, 27 ])))
 # IO.inspect(Poker.threeKind(hd tl Poker.deal([ 17, 39, 30, 52, 44, 25, 41, 51, 12 ])))
-
 # IO.inspect(Poker.fourKind(hd Poker.deal([ 40, 41, 27, 28, 1,  14, 15, 42, 29 ])))
 # IO.inspect(Poker.fullHouse(hd tl Poker.deal([ 17, 39, 30, 52, 44, 25, 41, 51, 12 ])))
+lst = [ 2, 15, 6, 9, 19, 32, 22, 35, 3 ]
+IO.inspect(Poker.deal(lst))
+x = tl Poker.fullHouse(hd Poker.deal(lst))
+# IO.inspect(x)
+y = tl Poker.fullHouse(hd tl Poker.deal(lst))
+IO.inspect(Poker.tie_fullHouse(x, y))
 
-# IO.puts(Poker.straightFlush(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
-#IO.puts(Poker.straightFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [7, "H"]]))
-#IO.puts(Poker.getMultipleRankStraight([[[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]],[[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]]],[[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]]))
-# IO.inspect(Poker.twoPair(hd Poker.deal([ 40, 52, 46, 11, 48, 27, 24, 33, 37 ])))
-#IO.puts(Poker.royalFlush([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
+# IO.inspect(Poker.getMultipleRankRecursive([[[8, "C"], [8, "D"], [8, "H"], [8, "S"]], [[10, "D"], [10, "H"], [10, "H"], [10, "S"]] ], [[8, "C"], [8, "D"], [8, "H"], [8, "S"]]))
