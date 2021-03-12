@@ -20,29 +20,49 @@ defmodule Poker do
   end
 
   def getHighestRank(hand) do
-    lst = handToNum(hand)
-
+    high =
+      cond do
+        1 in hand -> 1
+        13 in hand -> 13
+        12 in hand-> 12
+        11 in hand-> 11
+        10 in hand-> 10
+        9 in hand-> 9
+        8 in hand-> 8
+        7 in hand-> 7
+        6 in hand-> 6
+        5 in hand-> 5
+        4 in hand-> 4
+        3 in hand-> 3
+        2 in hand-> 2
+      end
+    high
+  end
+  def getHighestRankV2(hand) do
+    lst = List.flatten(hand)
+    # IO.puts(hand|> inspect(charlists: :as_lists))
+    # IO.puts(1 in List.flatten(hand))
     high =
       cond do
         1 in lst -> 1
         13 in lst -> 13
-        12 in lst -> 12
-        11 in lst -> 11
-        10 in lst -> 10
-        9 in lst -> 9
-        8 in lst -> 8
-        7 in lst -> 7
-        6 in lst -> 6
-        5 in lst -> 5
-        4 in lst -> 4
-        3 in lst -> 3
-        2 in lst -> 2
+        12 in lst-> 12
+        11 in lst-> 11
+        10 in lst-> 10
+        9 in lst-> 9
+        8 in lst-> 8
+        7 in lst-> 7
+        6 in lst-> 6
+        5 in lst-> 5
+        4 in lst-> 4
+        3 in lst-> 3
+        2 in lst-> 2
       end
-
     high
   end
 
   def checkNum(num) do
+
     # Takes any number and returns its value with the range 1-13
     a = num == 1 or num == 14 or num == 27 or num == 40
     b = num == 2 or num == 15 or num == 28 or num == 41
@@ -86,12 +106,13 @@ defmodule Poker do
   def getHighRankRecursive(choices, highest) do
     a = hd(hd (choices))
     b = hd (choices)
-    high = getHighestRank([getHighestRank([hd highest]), getHighestRank([a])])
-    # IO.inspect(hd highest)
+
+    high = getHighestRank([getHighestRankV2([hd highest]), getHighestRankV2([a])])
+
     ans =
       cond do
         high in [a] -> b
-        high in [hd highest] -> [highest]
+        high in [hd highest] -> highest
       end
     getHighRankRecursive(choices -- [hd choices], ans)
   end
@@ -150,33 +171,64 @@ defmodule Poker do
   # end
 
   #straight ----------------------------------------------
-  def straight(hand) do
+  def straightHelper(hand) do
     num = for x <- hand, do: hd x # collecting numbers
     setupPairs = Enum.chunk_every(num, 2, 1, :discard)
     adj = for x <- setupPairs, do: hd(tl(x)) - hd(x) #Subtracting adjcant elements
-    IO.inspect(adj)
+    #IO.puts(adj|> inspect(charlists: :as_lists))
     adj =  MapSet.new(adj)
-    IO.inspect(adj)
+
     strt = String.length(Enum.join(adj, ""))
-    condition =strt == 1 and 1 in adj
-    IO.puts condition
-    five = hd(Enum.chunk_every(hand,5))
-    IO.puts(highCard(hand))
-    res =
-    cond do
-      condition = true -> [5,five]
-      condition =false -> highCard(hand)
+    condition = strt == 1 and 1 in adj
+    if condition == true do
+      hand
+    else
+      false
     end
-    res|> inspect(charlists: :as_lists)
-    # IO.puts(num|> inspect(charlists: :as_lists))
+
+  end
+
+  def straight(hand) do #FIX LATER
+    five = Enum.chunk_every(hand,5,1, :discard) # chunk into fives
+    check = for x <- five, do: straightHelper(x)
+    build = Enum.reject(check, fn x -> x==false end)
+
+    if Enum.count(build)==1 do
+      [5,hd build]|> inspect(charlists: :as_lists)
+    else
+      highCard(hand)
+
+    end
+
+    # four = Enum.reject(b, fn x -> Enum.count(x) < 4 end)
+
+
+
+
+    # num = for x <- five, do: hd x # collecting numbers
+    # setupPairs = Enum.chunk_every(num, 2, 1, :discard)
+    # adj = for x <- setupPairs, do: hd(tl(x)) - hd(x) #Subtracting adjcant elements
+    # IO.inspect(adj|> inspect(charlists: :as_lists))
+    # adj =  MapSet.new(adj)
+    # strt = String.length(Enum.join(adj, ""))
+    # condition =strt == 1 and 1 in adj
+    # IO.puts(condition)
+    # res =
+    # cond do
+    #   condition == true -> [5,five]
+    #   condition == false -> highCard(hand)
+    # end
+    # res|> inspect(charlists: :as_lists)
+    # # IO.puts(num|> inspect(charlists: :as_lists))
     # IO.puts(hand|> inspect(charlists: :as_lists))
-    # IO.puts(hd hd hand)
-    # IO.puts(hd hd tl hand)
+    # # IO.puts(hd hd hand)
+    # # IO.puts(hd hd tl hand)
 
   end
 
   #  flush -----------------------------------------------
   # def flush(hand) do
+
   # end
 
   # straight Flush ----------------------------------------
@@ -185,10 +237,9 @@ defmodule Poker do
 
   # high card --------------------------------------------
   def highCard(hand) do
-    num = for x <- hand, do: hd x
-    suit = for x <- hand, do: tl x
-    IO.puts(suit|> inspect(charlists: :as_lists))
-    card = getHighestRank(hand)
+    # num = for x <- hand, do: hd x
+    # suit = for x <- hand, do: tl x
+    card = getHighRankRecursive(hand, hd(hand))
     [1,card]|> inspect(charlists: :as_lists)
 
   end
@@ -218,19 +269,25 @@ defmodule Poker do
 
   # two pair --------------------------------------------------
 
-  # def twoPair(hand) do
-  # end
-
-  # pair ------------------------------------------------------
-
-  def pair(hand) do
+  def twoPair(hand) do
     lst = Enum.chunk_by(hand, fn x -> hd(x) end)
     lst2 = for x <- lst, do: x
     lst2 = equalPairs(lst2, [])
     cards = for x <- lst2, do: [hd(hd(x)), hd(hd(tl(x)))]
-    lst = Enum.take_while(lst2, fn x -> hd(hd(x)) == hd(hd(getHighRankRecursive(cards, hd(cards)))) end)
-    lst = [hd(hd(lst))] ++ [hd(tl(hd(lst)))]
-    [2, lst]
+
+    cards |> inspect(charlists: :as_lists)
+  end
+
+  # pair ------------------------------------------------------
+  def pair(hand) do
+    lst = Enum.chunk_by(hand, fn x -> hd(x) end)
+    lst2 = for x <- lst, do: x
+    lst2 = equalPairs(lst2, [])
+    # cards = for x <- lst2, do: [hd(hd(x)), hd(hd(tl(x)))]
+    [2, hd(lst2)]
+    # lst = Enum.take_while(lst2, fn x -> hd(hd(x)) == hd(hd(getHighRankRecursive(cards, hd(cards)))) end)
+    # lst = [hd(hd(lst))] ++ [hd(tl(hd(lst)))]
+    # [2, lst]
   end
 
 
@@ -259,11 +316,17 @@ end
 
 #IO.puts(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
 # IO.puts(Poker.getHighRankRecursive([[3, "C"], [6, "S"], [9, "C"], [9, "S"], [10, "S"], [11, "C"], [11, "S"]], [3,"C"] ))
+#IO.puts(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
+IO.puts(Poker.getHighRankRecursive([[1, "H"], [1, "S"], [7, "H"], [7, "S"]], [1,"H"] ))
+
 #IO.puts(Poker.royalFlush([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
 
 # IO.inspect(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
 # IO.puts(Poker.straight(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
-IO.inspect(Poker.pair(hd Poker.deal([ 40, 52, 46, 11, 48, 27, 29, 33, 37 ])))
+# IO.puts(Poker.straight([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
+
+# IO.inspect(Poker.twoPair(hd Poker.deal([ 40, 52, 46, 11, 48, 27, 24, 33, 37 ])))
 #IO.puts(Poker.royalFlush([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
+
 
 # IO.inspect(Poker.bestPair([[1,1], [2,2]], []))
