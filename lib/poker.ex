@@ -321,7 +321,7 @@ defmodule Poker do
   def fourKind(hand) do
     lst = Enum.chunk_by(hand, fn x -> hd(x) end)
     four = Enum.reject(lst, fn x -> Enum.count(x) != 4 end)
-    # IO.inspect(four)
+
     if four == [] do
       false
     else
@@ -355,38 +355,55 @@ defmodule Poker do
   def threeKind(hand) do
     lst = Enum.chunk_by(hand, fn x -> hd(x) end)
     three = Enum.reject(lst, fn x -> Enum.count(x) != 3 end)
+
     cond do
       three == [] -> false
+
       length(three) > 1 ->
+
         cmp = hd(three) ++ hd(tl(three))
-        [3, Enum.take_while(cmp, fn x -> hd(x) == hd(getHandHighRank(cmp, hd(cmp))) end)]
+        leftover = hand -- Enum.take_while(cmp, fn x -> hd(x) == hd(getHandHighRank(cmp, hd(cmp))) end)
+        x = getHandHighRank(leftover, hd(leftover))
+        leftover = leftover -- [x]
+        y = getHandHighRank(leftover, hd(leftover))
+        [3, Enum.take_while(cmp, fn x -> hd(x) == hd(getHandHighRank(cmp, hd(cmp))) end), [x] ++ [y]]
+
       length(three) == 1 ->
-        [3, three]
+        leftover = hand -- (hd three)
+        x = getHandHighRank(leftover, hd(leftover))
+        leftover = leftover -- [x]
+        y = getHandHighRank(leftover, hd(leftover))
+        [3, (hd three), [x] ++ [y]]
     end
 
   end
 
   # two pair --------------------------------------------------
-
+  # NOTE: WHY DOESNT THIS WORK FOR SOME CASES HASFBSHB
   def twoPair(hand) do
     lst = Enum.chunk_by(hand, fn x -> hd(x) end)
     lst2 = for x <- lst, do: x
     lst2 = equalPairs(lst2, [])
 
-    if lst2 == [] do
+    if length(lst2) < 2 do
       false
     else
-      a = Enum.take_while(lst2, fn x -> hd(hd(x)) == hd(getHandHighRank(lst2, hd(hd(lst2)))) end)
-      lst2 = lst2 -- [hd(a)]
-      cmp = hd(lst2) ++ hd(tl(lst2))
+      a = getMultipleRankRecursive(lst2, hd(lst2))
+      lst2 = lst2 -- [a]
+      b = getMultipleRankRecursive(lst2, hd(lst2))
+      leftover = ((hand) -- a) -- b
+      x = getHandHighRank(leftover, hd(leftover))
+      [3, a ++ b, x]
 
-      b = Enum.drop_while(cmp, fn x -> hd(x) != hd(getHandHighRank(cmp, hd(cmp))) end)
-
-      if b == [] do
-        false
-      else
-        [3, hd(a) ++ b]
-      end
+      # a = Enum.take_while(lst2, fn x -> hd(x) == getMultipleRankRecursive(lst2, hd(lst2)) end)
+      # lst2 = lst2 -- [hd(a)]
+      # cmp = hd(lst2) ++ hd(tl(lst2))
+      # b = Enum.drop_while(cmp, fn x -> hd(x) != hd(getHandHighRank(cmp, hd(cmp))) end)
+      # if b == [] do
+      #   false
+      # else
+      #   [3, hd(a) ++ b, x]
+      # end
 
     end
 
@@ -398,10 +415,18 @@ defmodule Poker do
 
     lst = Enum.chunk_by(hand, fn x -> hd(x) end)
     lst2 = Enum.reject(lst, fn x -> Enum.count(x) != 2 end)
+
     if lst2 == [] do
       false
     else
-      [2, hd(lst2)]
+      # MAKE RECURSIVE METHOD FOR THIS
+      leftover = ((hand) -- hd lst2)
+      x = getHandHighRank(leftover, hd(leftover))
+      leftover = ((leftover) -- [x])
+      y = getHandHighRank(leftover, hd(leftover))
+      leftover = ((leftover) -- [y])
+      z = getHandHighRank(leftover, hd(leftover))
+      [2, hd(lst2), [x]++[y]++[z]]
     end
 
   end
@@ -439,19 +464,121 @@ defmodule Poker do
   end
 
   # # Three of a Kind Tie -----------------------------------------
-  # def tie_threeKind(hand1, hand2) do
+  def tie_threeKind(hand1, leftover1, hand2, leftover2) do
 
-  # end
+    if hd(hd(hand1)) == hd(hd(hand2)) do
+      x = getMultipleRankRecursive([(leftover1), (leftover2)] , leftover1)
+      if x == (leftover1) do
+        hand1
+      else
+        hand2
+      end
+    else
+      # test this -- when 2 ppl have 3ofakind but not the exact same
+      x = getMultipleRankRecursive([(hand1), (hand2)] , hand1)
+      if x == hand1 do
+        hand1
+      else
+        hand2
+      end
+    end
+
+  end
 
   # # Two Pair Tie ------------------------------------------------
-  # def tie_twoPair(hand1, hand2) do
+  def tie_twoPair(hand1, leftover1, hand2, leftover2) do
 
-  # end
+    # if first pair is the same
+    if hd(hd(hand1)) == hd(hd(hand2)) do
+      x = Enum.drop_while(hand1, fn x -> hd(x) == hd(hd(hand1)) end)
+      y = Enum.drop_while(hand2, fn x -> hd(x) == hd(hd(hand1)) end)
 
-  # # Pair Tie -----------------------------------------------------
-  # def tie_pair(hand1, hand2) do
+      # if second pair is the same
+      if x == y do
+        high = getHandHighRank([leftover1] ++ [leftover2], leftover1)
 
-  # end
+        if high == leftover1 do
+          hand1
+        else
+          hand2
+        end
+
+      else
+        high = getMultipleRankRecursive([(x), (y)] , x)
+        if high == x do
+          hand1
+        else
+          hand2
+        end
+      end
+
+    else
+      x = Enum.take_while(hand1, fn x -> hd(x) == hd(hd(hand1)) end)
+      y = Enum.take_while(hand2, fn x -> hd(x) == hd(hd(hand2)) end)
+
+      high = getMultipleRankRecursive([(x), (y)] , x)
+      if high == x do
+        hand1
+      else
+        hand2
+      end
+    end
+
+  end
+
+  # # Pair Tie ----------------------------------------------------
+  def tie_pair(hand1, leftover1, hand2, leftover2) do
+
+    # if first pair is the same
+    if hd(hd(hand1)) == hd(hd(hand2)) do
+
+      # highest elem in leftover
+      x = getHandHighRank(leftover1, hd leftover1)
+      y = getHandHighRank(leftover2, hd leftover2)
+
+      # if highest elem in leftover are the same
+      if hd(x) == hd(y) do
+        leftover1 = (leftover1) -- [x]
+        leftover2 = (leftover2) -- [y]
+        x = getHandHighRank(leftover1, hd leftover1)
+        y = getHandHighRank(leftover2, hd leftover2)
+
+        # if 2nd highest elem in leftover are the same
+        if hd(x) == hd(y) do
+          leftover1 = (leftover1) -- [x]
+          leftover2 = (leftover2) -- [y]
+
+          if getHandHighRank(leftover1 ++ leftover2, leftover1) == leftover1 do
+            hand1
+          else
+            hand2
+          end
+
+        # if 2nd highest elem in leftover are not the same --> return the high card between the 2
+        else
+          if getHandHighRank([[x] ++ [y]] , x) == x do
+            hand1
+          else
+            hand2
+          end
+
+        end
+      # if highest elem in leftover are not the same --> return the high card between the 2
+      else
+
+        if getHandHighRank([[x] ++ [y]] , x) == x do
+          hand1
+        else
+          hand2
+        end
+
+      end
+
+    else
+      getMultipleRankRecursive([(hand1), (hand2)] , hand1)
+    end
+  end
+
 
   # ----------------------------------------------------
 
@@ -463,17 +590,17 @@ defmodule Poker do
     cards = cards
     hand1=[hd(cards),hd tl tl cards]
     hand2=[hd(tl(cards)), hd(tl(tl(tl(cards))))]
+    # playerCards1 = transformHand(Enum.sort(hand1))
+    # playerCards2 = transformHand(Enum.sort(hand2))
+    # IO.inspect(playerCards1)
+    # IO.inspect(playerCards2)
     cards = cards -- hand1
     cards = cards -- hand2
     hand1 = transformHand(Enum.sort(hand1 ++ cards))
     hand2 = transformHand(Enum.sort(hand2 ++ cards))
     [hand1,hand2]
-
   end
 end
-
-
-
 
 
 # IO.puts(Poker.straight(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
@@ -492,20 +619,26 @@ end
 #IO.puts(Poker.royalFlush([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
 
 # Vanessa's Testers
-# IO.inspect(Poker.deal([ 40, 52, 46, 11, 48, 27, 24, 33, 37 ]))
-# IO.inspect(Poker.twoPair(hd Poker.deal([ 40, 52, 46, 11, 48, 27, 24, 33, 37 ])))
+# IO.inspect(Poker.deal([ 50, 26, 39, 3,  11, 27, 20, 48, 52 ]))
+# IO.inspect(Poker.twoPair(hd Poker.deal([ 52, 26, 39, 3,  2, 27, 24, 48, 50 ])))
 # IO.inspect(Poker.threeKind(hd tl Poker.deal([ 40, 52, 46, 11, 48, 27, 24, 33, 37 ])))
-#IO.inspect(Poker.twoPair(hd Poker.deal([ 40, 52, 46, 11, 48, 27, 24, 33, 37 ])))
-# IO.inspect(Poker.pair(hd Poker.deal([ 40, 52, 46, 11, 48, 27, 29, 32, 37 ])))
+# IO.inspect(Poker.pair(hd tl Poker.deal([ 40, 52, 46, 11, 48, 27, 29, 32, 37 ])))
 # IO.inspect(Poker.threeKind(hd Poker.deal([ 17, 31, 30, 51, 44, 43, 1, 14, 27 ])))
+# IO.inspect(Poker.threeKind(hd tl Poker.deal([ 17, 8, 30, 51, 44, 43, 1, 14, 27 ])))
 # IO.inspect(Poker.threeKind(hd tl Poker.deal([ 17, 39, 30, 52, 44, 25, 41, 51, 12 ])))
 # IO.inspect(Poker.fourKind(hd Poker.deal([ 40, 41, 27, 28, 1,  14, 15, 42, 29 ])))
 # IO.inspect(Poker.fullHouse(hd tl Poker.deal([ 17, 39, 30, 52, 44, 25, 41, 51, 12 ])))
-lst = [ 2, 15, 6, 9, 19, 32, 22, 35, 3 ]
-IO.inspect(Poker.deal(lst))
-x = tl Poker.fullHouse(hd Poker.deal(lst))
-# IO.inspect(x)
-y = tl Poker.fullHouse(hd tl Poker.deal(lst))
-IO.inspect(Poker.tie_fullHouse(x, y))
 
-# IO.inspect(Poker.getMultipleRankRecursive([[[8, "C"], [8, "D"], [8, "H"], [8, "S"]], [[10, "D"], [10, "H"], [10, "H"], [10, "S"]] ], [[8, "C"], [8, "D"], [8, "H"], [8, "S"]]))
+lst = [ 40, 52, 46, 11, 48, 27, 29, 32, 37 ]
+IO.inspect(Poker.deal(lst))
+x = hd tl Poker.pair(hd Poker.deal(lst))
+x1 = (hd tl tl Poker.pair(hd Poker.deal(lst))) -- x
+y = hd tl Poker.pair(hd tl Poker.deal(lst))
+y1 = (hd tl tl Poker.pair(hd tl Poker.deal(lst))) -- y
+IO.inspect(Poker.tie_pair(x, x1, y, y1))
+
+# IO.inspect(Poker.getMultipleRankRecursive([[[11, "H"], [10, "C"], [8, "C"]],[[11, "H"], [9, "D"], [6, "C"]]], [[11, "H"], [10, "C"], [8, "C"]]))
+
+# IO.inspect(Poker.deal([ 1, 2, 13, 4, 7, 20, 9, 22, 35 ]))
+# IO.inspect(Poker.fullHouse(hd tl Poker.deal([ 1, 2, 3, 4, 7, 20, 9, 22, 35 ])))
+# IO.inspect(Poker.fullHouse(hd Poker.deal([ 1, 2, 3, 4, 7, 20, 9, 22, 35 ])))
