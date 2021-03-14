@@ -19,7 +19,7 @@ defmodule Poker do
     ans
   end
 
-  def getHighestRank(hand) do
+  def getHRInt(hand) do
     # Takes a hand and returns the highest rank
     high =
       cond do
@@ -41,7 +41,7 @@ defmodule Poker do
   end
 
   # Works with transform method
-  def getHighestRankV2(hand) do
+  def getHRMatrix(hand) do
     lst = List.flatten(hand)
     high =
       cond do
@@ -119,7 +119,7 @@ defmodule Poker do
   def getMultipleRankStraight(choices,highest) do
     a = hd choices
     tail = List.last(a)
-    high = getHighestRankV2([getHighestRank(tail),getHighestRank(List.last(highest))])
+    high = getHRMatrix([getHRInt(tail),getHRInt(List.last(highest))])
     ans =
       cond do
         high in tail -> a
@@ -136,7 +136,7 @@ defmodule Poker do
     a = hd(hd (choices))
     b = hd (choices)
 
-    high = getHighestRank([getHighestRankV2([hd highest]), getHighestRankV2([a])])
+    high = getHRInt([getHRMatrix([hd highest]), getHRMatrix([a])])
 
     ans =
       cond do
@@ -174,19 +174,6 @@ defmodule Poker do
       false
     end
   end
-
-  # Checks if hand is in the same suit
-  # def checkSameSuit(hand) do
-  #   suits = for x <- hand, do: tl x # collecting suits
-  #   setSuits =  MapSet.new(suits)
-  #   same = String.length(Enum.join(setSuits, ""))
-  #   condition = same == 1
-  #   if condition == true do
-  #     hand
-  #   else
-  #     false
-  #   end
-  # end
 
   # Needs to be fixed
   def finalHand(hand) do
@@ -309,7 +296,20 @@ defmodule Poker do
   end
 
   #TIE CONDITIONS ----------------------------------------
-
+  def tie_higherTopCard([head|tail],[head2|tail2],og1,og2) do
+    a = head
+    b = head2
+    high = getHRInt([getHRMatrix(a),getHRMatrix(b)])
+    if high in a and high in b do
+      tie_higherTopCard(tail,tail2,og1,og2)
+    end
+    if high in a do
+      og1|> inspect(charlists: :as_lists)
+    end
+    if high in b do
+      og2|> inspect(charlists: :as_lists)
+    end
+  end
 
 
   #------------------------------------------------------
@@ -463,6 +463,7 @@ defmodule Poker do
 
   end
 
+
   # # Three of a Kind Tie -----------------------------------------
   def tie_threeKind(hand1, leftover1, hand2, leftover2) do
 
@@ -484,6 +485,7 @@ defmodule Poker do
     end
 
   end
+
 
   # # Two Pair Tie ------------------------------------------------
   def tie_twoPair(hand1, leftover1, hand2, leftover2) do
@@ -580,6 +582,7 @@ defmodule Poker do
   end
 
 
+
   # ----------------------------------------------------
 
   # 3. deal method
@@ -602,6 +605,12 @@ defmodule Poker do
   end
 end
 
+
+# IO.puts(Poker.higherTopCard([[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]],[[3, "C"], [4, "C"], [5, "C"], [6, "C"], [7, "C"]],  [[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]], [[3, "C"], [4, "C"], [5, "C"], [6, "C"], [7, "C"]]  ))
+# IO.puts(Poker.royalFlush([[10,"H"],[11,"H"],[12,"H"],[13,"H"],[1,"H"]]))
+
+# IO.inspect(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
+#IO.puts(Poker.straight(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
 
 # IO.puts(Poker.straight(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
 # IO.puts(Poker.straight([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
