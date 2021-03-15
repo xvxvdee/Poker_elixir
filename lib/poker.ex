@@ -325,7 +325,7 @@ defmodule Poker do
     if four == [] do
       false
     else
-      [4, hd four]
+      [8, hd four]
     end
 
     # cond do
@@ -600,14 +600,18 @@ defmodule Poker do
     hand2 = transformHand(Enum.sort(hand2 ++ cards))
 
     player1 = findHand(hand1)
-    # IO.inspect(player1)
+    IO.inspect(player1)
     player2 = findHand(hand2)
-    # IO.inspect(player2)
+    IO.inspect(player2)
 
     res =
     cond do
-      (hd player1) > (hd player2) -> IO.puts("player 1 wins")
-      (hd player1) < (hd player2) -> IO.puts("player 2 wins")
+      (hd player1) > (hd player2) ->
+        IO.puts("player 1 wins")
+        hd tl player1
+      (hd player1) < (hd player2) ->
+        IO.puts("player 2 wins")
+        hd tl player2
       (hd player1) == (hd player2) ->
         IO.puts("tie")
         breakTie(player1, player2)
@@ -621,20 +625,33 @@ defmodule Poker do
   def findHand(hand) do
     res =
     cond do
-      # royalFlush(hand) -> royalFlush(hand) #10
-      # straightFlush(hand) -> straightFlush(hand) #9
+      royalFlush(hand) ->
+        royalFlush(hand) #10
+
+      straightFlush(hand) ->
+        straightFlush(hand) #9
+
       fourKind(hand) ->
         fourKind(hand) #8
+
       fullHouse(hand) ->
         fullHouse(hand) #7
-      # flush(hand) -> flush(hand) #6
-      # straight(hand) -> straight(hand) #5
+
+      flush(hand) ->
+        flush(hand) #6
+
+      straight(hand) ->
+        straight(hand) #5
+
       threeKind(hand) ->
         threeKind(hand) #4
+
       twoPair(hand) ->
         twoPair(hand) #3
+
       pair(hand) ->
         pair(hand) #2
+
       highCard(hand) ->
         highCard(hand) #1
     end
@@ -648,7 +665,7 @@ defmodule Poker do
     IO.inspect(x)
     IO.inspect(y)
     IO.inspect(num)
-    
+
     if num == 4 || num == 3 || num == 2 do
       x1 = hd tl tl hand1
       y1 = hd tl tl hand2
@@ -718,7 +735,11 @@ IO.puts(Poker.finalHand([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
 # IO.inspect(Poker.fullHouse(hd tl Poker.deal([ 17, 39, 30, 52, 44, 25, 41, 51, 12 ])))
 
 
+<<<<<<< HEAD
+lst = [ 40, 41, 42, 43, 48, 49, 50, 51, 52 ]
+=======
 # lst = [ 40, 52, 46, 11, 48, 27, 29, 32, 37 ]
+>>>>>>> 9efc5332fb228d99c6ecb56f00c098a54a095cc7
 
 # IO.inspect(Poker.deal(lst))
 # x = hd tl Poker.fullHouse(hd Poker.deal(lst))
