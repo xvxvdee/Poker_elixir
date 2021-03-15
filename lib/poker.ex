@@ -177,7 +177,7 @@ defmodule Poker do
   # Returns final hand in correct format
   def finalHand(hand) do
     setup = for n <- hand, do: "#{to_string(checkNum(hd n))}#{hd tl n}"
-    setup |> inspect(charlists: :as_lists)
+    setup #|> inspect(charlists: :as_lists)
   end
 
   # Returns a hand in the form [[rank,suit],[rank,suit],etc]
@@ -205,37 +205,36 @@ defmodule Poker do
 
   # Royal flush ------------------------------------------
   def royalFlush(hand) do
-    opt1=[[10,'H'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]
-    opt2=[[10,'C'],[11,'C'],[12,'C'],[13,'C'],[1,'C']]
-    opt3=[[10,'D'],[11,'D'],[12,'D'],[13,'D'],[1,'D']]
-    opt4=[[10,'S'],[11,'S'],[12,'S'],[13,'S'],[1,'S']]
-    # IO.inspect(opt1)
-    # IO.inspect(Enum.sort(opt1))
-    # IO.inspect(hand)
-    # Enum.sort(hand)
 
-    # cond do
-    #   Enum.sort(hand)==Enum.sort(opt1) -> [10,opt1]
-    #   Enum.sort(hand)==Enum.sort(opt2) -> [10,opt2]
-    #   Enum.sort(hand)==Enum.sort(opt3) -> [10,opt3]
-    #   Enum.sort(hand)==Enum.sort(opt4) -> [10,opt4]
-    #   hand != opt1 and hand != opt2 and hand != opt3 and hand != opt4 -> false
-    # end
-    if Enum.sort(hand)==Enum.sort(opt1) do
-      [10,opt1]
+
+    # IO.inspect(hand)
+    #     A Royal Flush. is also a Straight Flush.
+    # A Royal Flush is the Highest Straight Flush.
+    # A Royal Flush can be checked as follows: isStraight( PokerHand ) && isFlush( PokerHand ) && Highest card == Ace.
+
+    opt1=[[10,"H"],[11,"H"],[12,"H"],[13,"H"],[1,"H"]]
+    opt2=[[10,"C"],[11,"C"],[12,"C"],[13,"C"],[1,"C"]]
+    opt3=[[10,"D"],[11,"D"],[12,"D"],[13,"D"],[1,"D"]]
+    opt4=[[10,"S"],[11,"S"],[12,"S"],[13,"S"],[1,"S"]]
+
+    count1 =Enum.count(Enum.reject((for x <- hand, do: x  in opt1), fn x -> x==false end))
+    count2 =Enum.count(Enum.reject((for x <- hand, do: x  in opt2), fn x -> x==false end))
+    count3 =Enum.count(Enum.reject((for x <- hand, do: x  in opt3), fn x -> x==false end))
+    count4 =Enum.count(Enum.reject((for x <- hand, do: x  in opt4), fn x -> x==false end))
+
+    # IO.inspect(count1)
+    ans = cond do
+      count1==5 -> [10,opt1]
+      count2==5 -> [10,opt2]
+      count3==5 -> [10,opt3]
+      count4==5 -> [10,opt4]
+      count1 !=5 -> false
+      count2 !=5 ->false
+      count3 !=5 -> false
+      count4 !=5 ->false
+
     end
-    if Enum.sort(hand)==Enum.sort(opt2) do
-      [10,opt2]
-    end
-    if Enum.sort(hand)==Enum.sort(opt3) do
-      [10,opt3]
-    end
-    if Enum.sort(hand)==Enum.sort(opt4) do
-      [10,opt4]
-    end
-    if hand==opt1 and hand==opt1 and hand==opt1 and hand==opt1 do
-      false
-    end
+    ans
 
   end
 
@@ -273,8 +272,6 @@ defmodule Poker do
 
   # straight Flush ----------------------------------------
   def straightFlush(hand) do
-    # strCheck=straight(hand)
-    # flCheck= flush(hand)
 
     if straight(hand) && flush(hand) do
       # if strCheck not false && flCheck not false do
@@ -592,8 +589,8 @@ defmodule Poker do
     hand1 = transformHand(Enum.sort(hand1 ++ cards))
     hand2 = transformHand(Enum.sort(hand2 ++ cards))
 
-    IO.inspect(hand1)
-    IO.inspect(hand2)
+    # IO.inspect(hand1)
+    # IO.inspect(hand2)
     player1 = findHand(hand1)
     IO.inspect(player1)
     player2 = findHand(hand2)
@@ -603,10 +600,12 @@ defmodule Poker do
     cond do
       (hd player1) > (hd player2) ->
         IO.puts("player 1 wins")
-        hd tl player1
+        finalHand(hd tl player1)
+
       (hd player1) < (hd player2) ->
         IO.puts("player 2 wins")
-        hd tl player2
+        finalHand(hd tl player2)
+
       (hd player1) == (hd player2) ->
         IO.puts("tie")
         breakTie(player1, player2)
@@ -657,8 +656,8 @@ defmodule Poker do
     num = hd hand1
     x = hd tl hand1
     y = hd tl hand2
-    # IO.inspect(x)
-    # IO.inspect(y)
+    IO.inspect(x)
+    IO.inspect(y)
     # IO.inspect(num)
 
     if num == 4 || num == 3 || num == 2 do
@@ -702,14 +701,14 @@ end
 # IO.puts(Poker.straight(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
 
 #IO.puts(Poker.straightFlush(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
-#IO.puts(Poker.straightFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
+#IO.inspect(Poker.royalFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
 
 # IO.inspect(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
 # IO.puts(Poker.straight(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
 #IO.puts(Poker.straight([[9, "C"], [8, "C"], [7, "C"], [6, "C"], [5, "C"], [4, "C"], [3, "C"]]))
 
 # IO.puts(Poker.straightFlush(hd Poker.deal([ 30, 13, 27, 44, 12, 17, 33, 41, 43 ])))
-# IO.puts(Poker.straightFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [7, "H"]]))
+#IO.puts(Poker.straightFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [7, "H"]]))
 
 
 # IO.puts(Poker.getMultipleRankRecursive([[[3, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]], [[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]], [[9, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]]],[[3, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]]))
@@ -720,11 +719,23 @@ end
 
 # Vanessa's Testers
 
-lst = [ 37, 13, 38, 29, 24, 16, 31, 34, 35 ]
-
+lst =   [9,  8,  7,  6,  5,  4,  3,  2,  1  ]
 IO.inspect(Poker.deal(lst))
+
 # x = hd tl Poker.fullHouse(hd Poker.deal(lst))
 # # x1 = (hd tl tl Poker.pair(hd Poker.deal(lst))) -- x
 # y = hd tl Poker.fullHouse(hd tl Poker.deal(lst))
 # # y1 = (hd tl tl Poker.pair(hd tl Poker.deal(lst))) -- y
 # IO.inspect(Poker.tie_fullHouse(x, y))
+
+
+# IO.inspect(Poker.getMultipleRankRecursive([[[11, "H"], [10, "C"], [8, "C"]],[[11, "H"], [9, "D"], [6, "C"]]], [[11, "H"], [10, "C"], [8, "C"]]))
+
+# IO.inspect(Poker.deal([ 1, 2, 13, 4, 7, 20, 9, 22, 35 ]))
+# IO.inspect(Poker.fullHouse(hd tl Poker.deal([ 1, 2, 3, 4, 7, 20, 9, 22, 35 ])))
+# IO.inspect(Poker.fullHouse(hd Poker.deal([ 1, 2, 3, 4, 7, 20, 9, 22, 35 ])))
+
+# IO.inspect(Poker.deal(lst))
+# Poker.findHand(hd Poker.deal(lst))
+# Poker.royalFlush(hd Poker.deal([ 40, 41, 42, 43, 48, 49, 50, 51, 52 ]))
+# Poker.royalFlush(hd tl (Poker.deal([ 40, 41, 42, 43, 48, 49, 50, 51, 52 ])))
