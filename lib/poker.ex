@@ -214,7 +214,7 @@ defmodule Poker do
     if Enum.sort(hand)==Enum.sort(opt1) do
       [10,opt1]
     end
-    ifEnum.sort(hand)==Enum.sort(opt2) do
+    if Enum.sort(hand)==Enum.sort(opt2) do
       [10,opt2]
     end
     if Enum.sort(hand)==Enum.sort(opt3) do
@@ -735,14 +735,9 @@ IO.puts(Poker.straightFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [
 # IO.inspect(Poker.fourKind(hd Poker.deal([ 40, 41, 27, 28, 1,  14, 15, 42, 29 ])))
 # IO.inspect(Poker.fullHouse(hd tl Poker.deal([ 17, 39, 30, 52, 44, 25, 41, 51, 12 ])))
 
-
-<<<<<<< HEAD
 lst = [ 40, 41, 42, 43, 48, 49, 50, 51, 52 ]
-=======
-# lst = [ 40, 52, 46, 11, 48, 27, 29, 32, 37 ]
->>>>>>> 9efc5332fb228d99c6ecb56f00c098a54a095cc7
 
-# IO.inspect(Poker.deal(lst))
+IO.inspect(Poker.deal(lst))
 # x = hd tl Poker.fullHouse(hd Poker.deal(lst))
 # # x1 = (hd tl tl Poker.pair(hd Poker.deal(lst))) -- x
 # y = hd tl Poker.fullHouse(hd tl Poker.deal(lst))
