@@ -205,26 +205,56 @@ defmodule Poker do
 
   # Royal flush ------------------------------------------
   def royalFlush(hand) do
-    opt1=[[10,'H'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]
-    opt2=[[10,'C'],[11,'C'],[12,'C'],[13,'C'],[1,'C']]
-    opt3=[[10,'D'],[11,'D'],[12,'D'],[13,'D'],[1,'D']]
-    opt4=[[10,'S'],[11,'S'],[12,'S'],[13,'S'],[1,'S']]
+    IO.inspect(hand)
+#     A Royal Flush. is also a Straight Flush.
+# A Royal Flush is the Highest Straight Flush.
+# A Royal Flush can be checked as follows: isStraight( PokerHand ) && isFlush( PokerHand ) && Highest card == Ace.
+   
+    # royal = straight(hand) && flush(hand)
+    # straightFlush(hand)
+        # five = Enum.sort(hand)
+    # five = hd Enum.chunk_every(five,5)
+    opt1=[[10,"H"],[11,"H"],[12,"H"],[13,"H"],[1,"H"]]
+    opt2=[[10,"C"],[11,"C"],[12,"C"],[13,"C"],[1,"C"]]
+    opt3=[[10,"D"],[11,"D"],[12,"D"],[13,"D"],[1,"D"]]
+    opt4=[[10,"S"],[11,"S"],[12,"S"],[13,"S"],[1,"S"]]
 
-    if Enum.sort(hand)==Enum.sort(opt1) do
-      [10,opt1]
+    count1 =Enum.count(Enum.reject((for x <- hand, do: x  in opt1), fn x -> x==false end))
+    count2 =Enum.count(Enum.reject((for x <- hand, do: x  in opt2), fn x -> x==false end))
+    count3 =Enum.count(Enum.reject((for x <- hand, do: x  in opt3), fn x -> x==false end))
+    count4 =Enum.count(Enum.reject((for x <- hand, do: x  in opt4), fn x -> x==false end))
+
+    IO.inspect(count1)
+    ans = cond do
+      count1==5 -> [10,opt1]
+      count2==5 -> [10,opt1]
+      count3==5 -> [10,opt1]
+      count4==5 -> [10,opt1]
+      count1 !=5 -> false
+      count2 !=5 ->false
+      count3 !=5 -> false
+      count4 !=5 ->false
     end
-    if Enum.sort(hand)==Enum.sort(opt2) do
-      [10,opt2]
-    end
-    if Enum.sort(hand)==Enum.sort(opt3) do
-      [10,opt3]
-    end
-    if Enum.sort(hand)==Enum.sort(opt4) do
-      [10,opt4]
-    end
-    if hand==opt1 and hand==opt1 and hand==opt1 and hand==opt1 do
-      false
-    end
+    ans
+    # count1=Enum.count(Enum.drop_while(hand, fn x -> x not in test end))
+    # # IO.puts(five)
+    # # IO.inspect(five)
+    # IO.puts([[1,"C"],[2,"C"]] in hand)
+    # if Enum.sort(hand) in Enum.sort(opt1) do
+    #   [10,opt1]
+    # end
+    # if Enum.sort(hand)==Enum.sort(opt2) do
+    #   [10,opt2]
+    # end
+    # if Enum.sort(hand)==Enum.sort(opt3) do
+    #   [10,opt3]
+    # end
+    # if Enum.sort(hand)==Enum.sort(opt4) do
+    #   [10,opt4]
+    # end
+    # if hand==opt1 and hand==opt1 and hand==opt1 and hand==opt1 do
+    #   false
+    # end
 
   end
 
@@ -262,10 +292,10 @@ defmodule Poker do
 
   # straight Flush ----------------------------------------
   def straightFlush(hand) do
-    strCheck=straight(hand)
-    flCheck= flush(hand)
+    # strCheck=straight(hand)
+    # flCheck= flush(hand)
 
-    if strCheck == true && flCheck ==true do
+    if straight(hand) && flush(hand) do
       # if strCheck not false && flCheck not false do
       sorted = Enum.sort(hand, &(tl(&1) == tl(&2)))
       checkflushes = Enum.chunk_by(sorted, fn x -> tl x end)
@@ -707,21 +737,21 @@ end
 # IO.puts(Poker.straight(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
 
 #IO.puts(Poker.straightFlush(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
-#IO.puts(Poker.straightFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
+#IO.inspect(Poker.royalFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
 
 # IO.inspect(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
 # IO.puts(Poker.straight(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
 #IO.puts(Poker.straight([[9, "C"], [8, "C"], [7, "C"], [6, "C"], [5, "C"], [4, "C"], [3, "C"]]))
 
 # IO.puts(Poker.straightFlush(hd Poker.deal([ 30, 13, 27, 44, 12, 17, 33, 41, 43 ])))
-# IO.puts(Poker.straightFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [7, "H"]]))
+#IO.puts(Poker.straightFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [7, "H"]]))
 
 
 # IO.puts(Poker.getMultipleRankRecursive([[[3, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]], [[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]], [[9, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]]],[[3, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]]))
 
 #IO.puts(Poker.getMultipleRankStraight([[[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]],[[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]]],[[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]]))
 
-IO.puts(Poker.finalHand([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
+#IO.puts(Poker.finalHand([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
 
 # Vanessa's Testers
 # IO.inspect(Poker.deal([ 50, 26, 39, 3,  11, 27, 20, 48, 52 ]))
@@ -735,11 +765,11 @@ IO.puts(Poker.finalHand([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
 # IO.inspect(Poker.fullHouse(hd tl Poker.deal([ 17, 39, 30, 52, 44, 25, 41, 51, 12 ])))
 
 
-<<<<<<< HEAD
-lst = [ 40, 41, 42, 43, 48, 49, 50, 51, 52 ]
-=======
+#<<<<<<< HEAD
+#lst = [ 40, 41, 42, 43, 48, 49, 50, 51, 52 ]
+#=======
 # lst = [ 40, 52, 46, 11, 48, 27, 29, 32, 37 ]
->>>>>>> 9efc5332fb228d99c6ecb56f00c098a54a095cc7
+#>>>>>>> 9efc5332fb228d99c6ecb56f00c098a54a095cc7
 
 # IO.inspect(Poker.deal(lst))
 # x = hd tl Poker.fullHouse(hd Poker.deal(lst))
@@ -756,3 +786,5 @@ lst = [ 40, 41, 42, 43, 48, 49, 50, 51, 52 ]
 
 # IO.inspect(Poker.deal(lst))
 # Poker.findHand(hd Poker.deal(lst))
+IO.puts(Poker.royalFlush(hd Poker.deal([ 40, 41, 42, 43, 48, 49, 50, 51, 52 ])))
+IO.puts(Poker.royalFlush(hd tl (Poker.deal([ 40, 41, 42, 43, 48, 49, 50, 51, 52 ]))))
