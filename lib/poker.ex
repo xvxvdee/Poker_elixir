@@ -174,7 +174,7 @@ defmodule Poker do
     end
   end
 
-  # Needs to be fixed
+  # Returns final hand in correct format
   def finalHand(hand) do
     setup = for n <- hand, do: "#{to_string(checkNum(hd n))}#{hd tl n}"
     setup |> inspect(charlists: :as_lists)
