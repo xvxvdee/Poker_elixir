@@ -211,16 +211,16 @@ defmodule Poker do
     opt3=[[10,'D'],[11,'D'],[12,'D'],[13,'D'],[1,'D']]
     opt4=[[10,'S'],[11,'S'],[12,'S'],[13,'S'],[1,'S']]
 
-    if hand==opt1 do
+    if Enum.sort(hand)==Enum.sort(opt1) do
       [10,opt1]
     end
-    if hand==opt2 do
+    ifEnum.sort(hand)==Enum.sort(opt2) do
       [10,opt2]
     end
-    if hand==opt3 do
+    if Enum.sort(hand)==Enum.sort(opt3) do
       [10,opt3]
     end
-    if hand==opt4 do
+    if Enum.sort(hand)==Enum.sort(opt4) do
       [10,opt4]
     end
     if hand==opt1 and hand==opt1 and hand==opt1 and hand==opt1 do
@@ -266,7 +266,7 @@ defmodule Poker do
     strCheck=straight(hand)
     flCheck= flush(hand)
 
-    if 5 in [hd strCheck] && 6 in [hd flCheck] do
+    if strCheck == true && flCheck ==true do
       # if strCheck not false && flCheck not false do
       sorted = Enum.sort(hand, &(tl(&1) == tl(&2)))
       checkflushes = Enum.chunk_by(sorted, fn x -> tl x end)
@@ -285,14 +285,14 @@ defmodule Poker do
       end
       ans #|> inspect(charlists: :as_lists)
     else
-      highCard(hand)
+      false
     end
   end
 
   # high card --------------------------------------------
   def highCard(hand) do
     card = getHandHighRank(hand, hd(hand))
-    [1,card]|> inspect(charlists: :as_lists)
+    [1,card]
 
   end
 
@@ -690,8 +690,8 @@ end
 # IO.inspect(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
 # IO.puts(Poker.straight(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
 
-#  IO.puts(Poker.straight(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
-# IO.puts(Poker.straight([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
+#IO.puts(Poker.straightFlush(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
+IO.puts(Poker.straightFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
 
 # IO.inspect(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
 # IO.puts(Poker.straight(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
@@ -719,9 +719,9 @@ end
 # IO.inspect(Poker.fullHouse(hd tl Poker.deal([ 17, 39, 30, 52, 44, 25, 41, 51, 12 ])))
 
 
-lst = [ 40, 52, 46, 11, 48, 27, 29, 32, 37 ]
+# lst = [ 40, 52, 46, 11, 48, 27, 29, 32, 37 ]
 
-IO.inspect(Poker.deal(lst))
+# IO.inspect(Poker.deal(lst))
 # x = hd tl Poker.fullHouse(hd Poker.deal(lst))
 # # x1 = (hd tl tl Poker.pair(hd Poker.deal(lst))) -- x
 # y = hd tl Poker.fullHouse(hd tl Poker.deal(lst))
