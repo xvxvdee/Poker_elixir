@@ -599,6 +599,27 @@ defmodule Poker do
     hand2 = transformHand(Enum.sort(hand2 ++ cards))
     [hand1,hand2]
   end
+
+  # make cases to find the hand and return the hand
+  # ex. returns [1, [cards], [side cards]]
+  def findHand(hand) do
+    IO.inspect(hand)
+    res =
+    cond do
+      royalFlush(hand) -> 10
+      straightFlush(hand) -> 9
+      fourKind(hand) -> 8
+      fullHouse(hand) -> 7
+      flush(hand) -> 6
+      straight(hand) -> 5
+      threeKind(hand) -> 4
+      twoPair(hand) -> 3
+      pair(hand) -> 2
+      highCard(hand) -> 1
+    end
+    res
+
+  end
 end
 
 
@@ -614,8 +635,13 @@ IO.puts(Poker.straight(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
 # IO.inspect(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
 # IO.puts(Poker.straight(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
 #IO.puts(Poker.straight([[9, "C"], [8, "C"], [7, "C"], [6, "C"], [5, "C"], [4, "C"], [3, "C"]]))
-IO.puts(Poker.straightFlush(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
+<<<<<<< HEAD
+#IO.puts(Poker.straightFlush(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
 #IO.puts(Poker.straightFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [7, "H"]]))
+=======
+# IO.puts(Poker.straightFlush(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
+# IO.puts(Poker.straightFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [7, "H"]]))
+>>>>>>> 25d9b52fbda51f4f99e1e7e454d417bda2faf079
 
 # IO.puts(Poker.getMultipleRankRecursive([[[3, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]], [[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]], [[9, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]]],[[3, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]]))
 
@@ -634,7 +660,11 @@ IO.puts(Poker.straightFlush(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1
 # IO.inspect(Poker.fourKind(hd Poker.deal([ 40, 41, 27, 28, 1,  14, 15, 42, 29 ])))
 # IO.inspect(Poker.fullHouse(hd tl Poker.deal([ 17, 39, 30, 52, 44, 25, 41, 51, 12 ])))
 
+<<<<<<< HEAD
 # lst = [ 40, 52, 46, 11, 48, 27, 29, 32, 37 ]
+=======
+#lst = [ 40, 52, 46, 11, 48, 27, 29, 32, 37 ]
+>>>>>>> 25d9b52fbda51f4f99e1e7e454d417bda2faf079
 # IO.inspect(Poker.deal(lst))
 # x = hd tl Poker.pair(hd Poker.deal(lst))
 # x1 = (hd tl tl Poker.pair(hd Poker.deal(lst))) -- x
@@ -647,3 +677,5 @@ IO.puts(Poker.straightFlush(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1
 # IO.inspect(Poker.deal([ 1, 2, 13, 4, 7, 20, 9, 22, 35 ]))
 # IO.inspect(Poker.fullHouse(hd tl Poker.deal([ 1, 2, 3, 4, 7, 20, 9, 22, 35 ])))
 # IO.inspect(Poker.fullHouse(hd Poker.deal([ 1, 2, 3, 4, 7, 20, 9, 22, 35 ])))
+
+#IO.inspect(Poker.findHand(hd Poker.deal(lst)))
