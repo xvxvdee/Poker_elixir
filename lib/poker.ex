@@ -301,15 +301,14 @@ defmodule Poker do
     a = head
     b = head2
     high = getHRInt([getHRMatrix(a),getHRMatrix(b)])
-    if high in a and high in b do
-      tie_higherTopCard(tail,tail2,og1,og2)
+    ans =
+    cond do
+      high in a ->og1
+      high in b ->og2
+      high in a and high in b ->  tie_higherTopCard(tail,tail2,og1,og2)
+
     end
-    if high in a do
-      og1|> inspect(charlists: :as_lists)
-    end
-    if high in b do
-      og2|> inspect(charlists: :as_lists)
-    end
+    ans
   end
 
 
