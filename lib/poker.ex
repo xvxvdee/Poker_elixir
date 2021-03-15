@@ -206,14 +206,7 @@ defmodule Poker do
   # Royal flush ------------------------------------------
   def royalFlush(hand) do
     IO.inspect(hand)
-#     A Royal Flush. is also a Straight Flush.
-# A Royal Flush is the Highest Straight Flush.
-# A Royal Flush can be checked as follows: isStraight( PokerHand ) && isFlush( PokerHand ) && Highest card == Ace.
-   
-    # royal = straight(hand) && flush(hand)
-    # straightFlush(hand)
-        # five = Enum.sort(hand)
-    # five = hd Enum.chunk_every(five,5)
+
     opt1=[[10,"H"],[11,"H"],[12,"H"],[13,"H"],[1,"H"]]
     opt2=[[10,"C"],[11,"C"],[12,"C"],[13,"C"],[1,"C"]]
     opt3=[[10,"D"],[11,"D"],[12,"D"],[13,"D"],[1,"D"]]
@@ -224,37 +217,17 @@ defmodule Poker do
     count3 =Enum.count(Enum.reject((for x <- hand, do: x  in opt3), fn x -> x==false end))
     count4 =Enum.count(Enum.reject((for x <- hand, do: x  in opt4), fn x -> x==false end))
 
-    IO.inspect(count1)
     ans = cond do
       count1==5 -> [10,opt1]
-      count2==5 -> [10,opt1]
-      count3==5 -> [10,opt1]
-      count4==5 -> [10,opt1]
+      count2==5 -> [10,opt2]
+      count3==5 -> [10,opt3]
+      count4==5 -> [10,opt4]
       count1 !=5 -> false
       count2 !=5 ->false
       count3 !=5 -> false
       count4 !=5 ->false
     end
     ans
-    # count1=Enum.count(Enum.drop_while(hand, fn x -> x not in test end))
-    # # IO.puts(five)
-    # # IO.inspect(five)
-    # IO.puts([[1,"C"],[2,"C"]] in hand)
-    # if Enum.sort(hand) in Enum.sort(opt1) do
-    #   [10,opt1]
-    # end
-    # if Enum.sort(hand)==Enum.sort(opt2) do
-    #   [10,opt2]
-    # end
-    # if Enum.sort(hand)==Enum.sort(opt3) do
-    #   [10,opt3]
-    # end
-    # if Enum.sort(hand)==Enum.sort(opt4) do
-    #   [10,opt4]
-    # end
-    # if hand==opt1 and hand==opt1 and hand==opt1 and hand==opt1 do
-    #   false
-    # end
 
   end
 
