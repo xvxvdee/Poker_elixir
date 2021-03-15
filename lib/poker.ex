@@ -224,7 +224,7 @@ defmodule Poker do
       [10,opt4]
     end
     if hand==opt1 and hand==opt1 and hand==opt1 and hand==opt1 do
-      highCard(hand)
+      false
     end
 
   end
@@ -238,7 +238,7 @@ defmodule Poker do
 
     ans =
     cond do
-      Enum.count(build)==0 ->  highCard(hand)#|> inspect(charlists: :as_lists)
+      Enum.count(build)==0 ->  false#|> inspect(charlists: :as_lists)
       Enum.count(build)==1 ->  [5,hd build]#|> inspect(charlists: :as_lists)
       Enum.count(build)>1 -> [5, getMultipleRankStraight(build, hd build)] #|> inspect(charlists: :as_lists)
     end
@@ -254,7 +254,7 @@ defmodule Poker do
 
     ans =
     cond do
-      Enum.count(build)==0 ->  highCard(hand)
+      Enum.count(build)==0 ->  false
       Enum.count(build)==1 ->[6, hd flushes] #|> inspect(charlists: :as_lists)
       Enum.count(build)>1 -> [6, getMultipleRankRecursive(flushes, hd flushes)]#|> inspect(charlists: :as_lists)
     end
@@ -278,7 +278,7 @@ defmodule Poker do
 
       ans =
       cond do
-        Enum.count(build)==0 ->  highCard(hand)
+        Enum.count(build)==0 ->  false
         Enum.count(build)==1 ->  [9,hd build]#|> inspect(charlists: :as_lists)
         Enum.count(build)>1 -> [9, getMultipleRankStraight(build, hd build)] #|> inspect(charlists: :as_lists)
       end
@@ -660,7 +660,6 @@ IO.puts(Poker.straight(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
 # IO.inspect(Poker.fourKind(hd Poker.deal([ 40, 41, 27, 28, 1,  14, 15, 42, 29 ])))
 # IO.inspect(Poker.fullHouse(hd tl Poker.deal([ 17, 39, 30, 52, 44, 25, 41, 51, 12 ])))
 
-<<<<<<< HEAD
 # lst = [ 40, 52, 46, 11, 48, 27, 29, 32, 37 ]
 =======
 #lst = [ 40, 52, 46, 11, 48, 27, 29, 32, 37 ]
