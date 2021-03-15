@@ -297,15 +297,15 @@ defmodule Poker do
   end
 
   #TIE CONDITIONS ----------------------------------------
-  def tie_higherTopCard([head|tail],[head2|tail2],og1,og2) do
-    a = head
-    b = head2
+  def tie_higherTopCard(check1,check2,og1,og2) do
+    a = List.last(check1)
+    b =  List.last(check2)
     high = getHRInt([getHRMatrix(a),getHRMatrix(b)])
     ans =
     cond do
       high in a ->og1
       high in b ->og2
-      high in a and high in b ->  tie_higherTopCard(tail,tail2,og1,og2)
+      high in a and high in b ->  tie_higherTopCard(check1--[high],check2--[high],og1,og2)
 
     end
     ans
@@ -648,8 +648,8 @@ defmodule Poker do
     num = hd hand1
     x = hd tl hand1
     y = hd tl hand2
-    IO.inspect(x)
-    IO.inspect(y)
+    # IO.inspect(x)
+    # IO.inspect(y)
     # IO.inspect(num)
 
     if num == 4 || num == 3 || num == 2 do
