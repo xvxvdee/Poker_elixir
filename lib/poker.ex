@@ -63,7 +63,6 @@ defmodule Poker do
   end
 
   def checkNum(num) do
-
     # Takes any number and returns its value with the range 1-13
     a = num == 1 or num == 14 or num == 27 or num == 40
     b = num == 2 or num == 15 or num == 28 or num == 41
@@ -177,7 +176,7 @@ defmodule Poker do
 
   # Needs to be fixed
   def finalHand(hand) do
-    setup = for n <- hand, do: "#{to_string(checkNum(n))}#{checkSuit(n)}"
+    setup = for n <- hand, do: "#{to_string(checkNum(hd n))}#{hd tl n}"
     setup |> inspect(charlists: :as_lists)
   end
 
@@ -214,7 +213,7 @@ defmodule Poker do
     if Enum.sort(hand)==Enum.sort(opt1) do
       [10,opt1]
     end
-    ifEnum.sort(hand)==Enum.sort(opt2) do
+    if Enum.sort(hand)==Enum.sort(opt2) do
       [10,opt2]
     end
     if Enum.sort(hand)==Enum.sort(opt3) do
@@ -691,7 +690,7 @@ end
 # IO.puts(Poker.straight(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
 
 #IO.puts(Poker.straightFlush(hd Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
-IO.puts(Poker.straightFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
+#IO.puts(Poker.straightFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"], [9, "C"]]))
 
 # IO.inspect(Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ]))
 # IO.puts(Poker.straight(hd tl Poker.deal([ 9,  8,  7,  6,  5,  4,  3,  2,  1 ])))
@@ -705,7 +704,7 @@ IO.puts(Poker.straightFlush([[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"], [
 
 #IO.puts(Poker.getMultipleRankStraight([[[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]],[[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]]],[[1, "C"], [2, "C"], [3, "C"], [4, "C"], [5, "C"]]))
 
-#IO.puts(Poker.royalFlush([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
+IO.puts(Poker.finalHand([[10,'C'],[11,'H'],[12,'H'],[13,'H'],[1,'H']]))
 
 # Vanessa's Testers
 # IO.inspect(Poker.deal([ 50, 26, 39, 3,  11, 27, 20, 48, 52 ]))
