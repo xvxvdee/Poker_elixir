@@ -206,20 +206,6 @@ defmodule Poker do
   # Royal flush ------------------------------------------
   def royalFlush(hand) do
 
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> e1b8ccd813f149022c02f3e858631d21436bdaf5
-    # IO.inspect(hand)
-    #     A Royal Flush. is also a Straight Flush.
-    # A Royal Flush is the Highest Straight Flush.
-    # A Royal Flush can be checked as follows: isStraight( PokerHand ) && isFlush( PokerHand ) && Highest card == Ace.
-
-<<<<<<< HEAD
-
-=======
->>>>>>> e1b8ccd813f149022c02f3e858631d21436bdaf5
     opt1=[[10,"H"],[11,"H"],[12,"H"],[13,"H"],[1,"H"]]
     opt2=[[10,"C"],[11,"C"],[12,"C"],[13,"C"],[1,"C"]]
     opt3=[[10,"D"],[11,"D"],[12,"D"],[13,"D"],[1,"D"]]
@@ -230,15 +216,6 @@ defmodule Poker do
     count3 =Enum.count(Enum.reject((for x <- hand, do: x  in opt3), fn x -> x==false end))
     count4 =Enum.count(Enum.reject((for x <- hand, do: x  in opt4), fn x -> x==false end))
 
-<<<<<<< HEAD
-    
-
-    # IO.inspect(count1)
-
-
-=======
-    # IO.inspect(count1)
->>>>>>> e1b8ccd813f149022c02f3e858631d21436bdaf5
     ans = cond do
       count1==5 -> [10,opt1]
       count2==5 -> [10,opt2]
