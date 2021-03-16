@@ -296,7 +296,7 @@ end
 
     ans =
     cond do
-            Enum.count(build)==0 ->  false#|> inspect(charlists: :as_lists)
+      Enum.count(build)==0 ->  false#|> inspect(charlists: :as_lists)
       Enum.count(build)==1 ->  [5,hd build]#|> inspect(charlists: :as_lists)
       Enum.count(build)>1 -> [5, buildBestFlush(build, hd build)] #|> inspect(charlists: :as_lists)
 
