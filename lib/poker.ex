@@ -305,17 +305,28 @@ defmodule Poker do
 
   #TIE CONDITIONS ----------------------------------------
   def tie_higherTopCard([head|tail],[head2|tail2],og1,og2) do
+    IO.inspect(head)
+    IO.inspect(head2)
+    # IO.inspect(og1)
+    # IO.inspect(og2)
+
     a = head
     b = head2
     high = getHRInt([getHRMatrix(a),getHRMatrix(b)])
     if high in a and high in b do
       tie_higherTopCard(tail,tail2,og1,og2)
     end
+
+    # res = cond do
+    #   high in a -> og1
+    #   high in b -> og2
+    # end
+    # res
     if high in a do
-      og1|> inspect(charlists: :as_lists)
+      og1 #|> inspect(charlists: :as_lists)
     end
     if high in b do
-      og2|> inspect(charlists: :as_lists)
+      og2 #|> inspect(charlists: :as_lists)
     end
   end
 
@@ -589,8 +600,8 @@ defmodule Poker do
     hand1 = transformHand(Enum.sort(hand1 ++ cards))
     hand2 = transformHand(Enum.sort(hand2 ++ cards))
 
-    # IO.inspect(hand1)
-    # IO.inspect(hand2)
+    IO.inspect(hand1)
+    IO.inspect(hand2)
     player1 = findHand(hand1)
     IO.inspect(player1)
     player2 = findHand(hand2)
@@ -656,14 +667,15 @@ defmodule Poker do
     num = hd hand1
     x = hd tl hand1
     y = hd tl hand2
-    IO.inspect(x)
-    IO.inspect(y)
+    # IO.inspect(x)
+    # IO.inspect(y)
     # IO.inspect(num)
 
     if num == 4 || num == 3 || num == 2 do
       x1 = hd tl tl hand1
       y1 = hd tl tl hand2
 
+      res =
       cond do
         num == 4 ->
           tie_threeKind(x, x1, y, y1)
@@ -672,8 +684,10 @@ defmodule Poker do
         num == 2 ->
           tie_pair(x, x1, y, y1)
       end
+      res
 
     else
+      res =
       cond do
         num == 9 ->
           tie_higherTopCard(x, y, x, y)
@@ -685,10 +699,10 @@ defmodule Poker do
           tie_higherTopCard(x, y, x, y)
         num == 5 ->
           tie_higherTopCard(x, y, x, y)
-        num == 1 -> 1
+        num == 1 -> getHandHighRank([x, y], x)
       end
+      res
     end
-
 
   end
 end
@@ -719,23 +733,17 @@ end
 
 # Vanessa's Testers
 
-lst =   [9,  8,  7,  6,  5,  4,  3,  2,  1  ]
-IO.inspect(Poker.deal(lst))
-
 # x = hd tl Poker.fullHouse(hd Poker.deal(lst))
 # # x1 = (hd tl tl Poker.pair(hd Poker.deal(lst))) -- x
 # y = hd tl Poker.fullHouse(hd tl Poker.deal(lst))
 # # y1 = (hd tl tl Poker.pair(hd tl Poker.deal(lst))) -- y
 # IO.inspect(Poker.tie_fullHouse(x, y))
 
+# TESTING TESTING TESTING
+IO.inspect("Test 1")
+lst =   [ 9,  8,  7,  6,  5,  4,  3,  2,  1  ]
+IO.inspect(Poker.deal(lst))
 
-# IO.inspect(Poker.getMultipleRankRecursive([[[11, "H"], [10, "C"], [8, "C"]],[[11, "H"], [9, "D"], [6, "C"]]], [[11, "H"], [10, "C"], [8, "C"]]))
-
-# IO.inspect(Poker.deal([ 1, 2, 13, 4, 7, 20, 9, 22, 35 ]))
-# IO.inspect(Poker.fullHouse(hd tl Poker.deal([ 1, 2, 3, 4, 7, 20, 9, 22, 35 ])))
-# IO.inspect(Poker.fullHouse(hd Poker.deal([ 1, 2, 3, 4, 7, 20, 9, 22, 35 ])))
-
+# IO.inspect("Test 2")
+# lst =   [ 52, 30, 39, 17, 25, 12, 51, 41, 44 ]
 # IO.inspect(Poker.deal(lst))
-# Poker.findHand(hd Poker.deal(lst))
-# Poker.royalFlush(hd Poker.deal([ 40, 41, 42, 43, 48, 49, 50, 51, 52 ]))
-# Poker.royalFlush(hd tl (Poker.deal([ 40, 41, 42, 43, 48, 49, 50, 51, 52 ])))
