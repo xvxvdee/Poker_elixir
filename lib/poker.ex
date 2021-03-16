@@ -166,8 +166,11 @@ defmodule Poker do
     adj = for x <- setupPairs, do: hd(tl(x)) - hd(x) #Subtracting adjcant elements
     adj =  MapSet.new(adj)
     strt = String.length(Enum.join(adj, ""))
+    # IO.inspect(adj)
+    # IO.puts(strt)
     condition = strt == 1 and 1 in adj
-    if condition == true do
+    condition2 = strt ==2 and 1 in adj and 8 in adj
+    if condition or condition2 do
       hand
     else
       false
@@ -219,13 +222,17 @@ end
       suit not in a ->  getSameSuit(hand--[a],suit,lst)
      end
     ans
-    # if hd tl a == suit do
-    #   getSameSuit(hand--[a],suit,lst++[a])
-    # else
-    #   getSameSuit(hand--[a],suit,lst)
-    # end
   end
   
+  def addOne(hand,one) do
+    #IO.inspect(Enum.member?(hand,hd one))
+    ans =
+      cond do
+      Enum.member?(hand,hd one)==true -> hand   
+      Enum.member?(hand,hd one)==false-> hand ++ [hd one]
+      end 
+    ans
+  end
 
   # POKER METHODS  https://www.fgbradleys.com/et_poker.asp
   #|> inspect(charlists: :as_lists)
@@ -262,16 +269,28 @@ end
 
   #straight ----------------------------------------------
 
+ 
+
   def straight(hand) do
+    hand =Enum.sort(hand)
     straights = Enum.chunk_every(hand,5,1, :discard) # chunk into fives
-    checkSequence = for x <- straights, do: inSequence(x)
+    ones = Enum.reject(hand, fn x -> 1 not in x end)
+    straightsUp = 
+      cond do
+      Enum.count(ones)==1 ->  for x <-straights, do: addOne(x,ones)
+      Enum.count(ones)!=1 ->  straights
+      end
+ 
+    checkSequence = for x <- straightsUp, do: inSequence(x)
     build = Enum.reject(checkSequence, fn x -> x==false end)
+    # IO.puts(build|> inspect(charlists: :as_lists))
+    # IO.puts(checkSequence|> inspect(charlists: :as_lists))
 
     ans =
     cond do
       Enum.count(build)==0 ->  false#|> inspect(charlists: :as_lists)
       Enum.count(build)==1 ->  [5,hd build]#|> inspect(charlists: :as_lists)
-      Enum.count(build)>1 -> [5, getMultipleRankStraight(build, hd build)] #|> inspect(charlists: :as_lists)
+      Enum.count(build)>1 -> [5, buildBestFlush(build, hd build)] #|> inspect(charlists: :as_lists)
     end
     ans#|> inspect(charlists: :as_lists)
   end
@@ -784,21 +803,21 @@ end
 
 # TESTING TESTING TESTING
 IO.puts("Test 1")
-lst = [ 38, 36, 37, 29, 24, 34, 31, 35, 16 ] #18
+#lst = [ 38, 36, 37, 29, 24, 34, 31, 35, 16 ] #18
 lst2 = [ 14, 43,  9, 12, 38, 47, 36, 37, 26 ] #16
-lst4=[ 37, 13, 38, 29, 24, 16, 31, 34, 35 ] #17 
+#lst4=[ 37, 13, 38, 29, 24, 16, 31, 34, 35 ] #17 
 #IO.puts(Poker.flush([[3, "D"], [5, "H"], [8, "H"], [9, "H"], [11, "D"], [11, "H"], [12, "H"]]))
 #IO.puts(Poker.sameSuit([[1, "C"], [2, "C"], [3, "C"], [6, "C"], [8, "C"], [10, "C"],[11, "C"]]))
-IO.puts("18 -----------------------------------------------")
-IO.inspect(Poker.flush([[3, "D"], [3, "H"], [5, "H"], [8, "H"], [9, "H"], [10, "H"], [11, "D"]]))
-IO.inspect(Poker.flush([[3, "D"], [5, "H"], [8, "H"], [9, "H"], [11, "D"], [11, "H"], [12, "H"]]))
-IO.inspect(Poker.deal(lst))
-IO.puts("[[12, H], [11, H], [9, H], [8, H], [5, H]] <----WINNER")
-IO.puts("17 -----------------------------------------------")
-IO.inspect(Poker.flush([[3, "D"], [5, "H"], [8, "H"], [9, "H"], [11, "D"], [11, "H"], [12, "H"]]))
-IO.inspect(Poker.flush([[3, "D"], [3, "H"], [5, "H"], [8, "H"], [9, "H"], [11, "D"], [13, "C"]]))
-IO.inspect(Poker.deal(lst4))
-IO.puts("[12H, 11H, 9H, 8H, 5H]<----WINNER")
+IO.puts("16 -----------------------------------------------")
+IO.inspect(Poker.straight([[1, "D"], [8, "S"], [9, "C"], [10, "H"], [11, "H"], [12, "H"], [13,"D"]]))
+IO.inspect(Poker.straight([[4, "S"], [8, "S"], [10, "H"], [11, "H"], [12, "C"], [12, "H"], [13, "D"]]))
+IO.inspect(Poker.deal(lst2))
+IO.puts("[10H, 11H 12H, 13D, 1D]<----WINNER")
+# IO.puts("17 -----------------------------------------------")
+# IO.inspect(Poker.flush([[3, "D"], [5, "H"], [8, "H"], [9, "H"], [11, "D"], [11, "H"], [12, "H"]]))
+# IO.inspect(Poker.flush([[3, "D"], [3, "H"], [5, "H"], [8, "H"], [9, "H"], [11, "D"], [13, "C"]]))
+# IO.inspect(Poker.deal(lst4))
+# IO.puts("[12H, 11H, 9H, 8H, 5H]<----WINNER")
 
 # IO.inspect("Test 2")
 # lst =   [ 52, 30, 39, 17, 25, 12, 51, 41, 44 ]
