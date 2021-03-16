@@ -1,3 +1,9 @@
+# Poker Assignment - Elixir
+# CPS506 Section 7/Section 6
+# Team ---------------------------
+# Thuy Van Hoang - 500949895
+# Deandra Spike-Madden - 500946801
+
 defmodule Poker do
   # HELPER METHODS
 
@@ -94,7 +100,6 @@ defmodule Poker do
         l -> 12
         m -> 13
       end
-
     ans
   end
 
@@ -166,17 +171,14 @@ defmodule Poker do
     adj = for x <- setupPairs, do: hd(tl(x)) - hd(x) #Subtracting adjcant elements
     adj =  MapSet.new(adj)
     strt = String.length(Enum.join(adj, ""))
-    # IO.inspect(adj)
-    # IO.puts(strt)
     condition = strt == 1 and 1 in adj
-    condition2 = strt ==2 and 1 in adj and 8 in adj
+    condition2 = strt ==2 and 1 in adj and 9 in adj
     if condition or condition2 do
       hand
     else
       false
     end
   end
-
 
   # Returns final hand in correct format
   def finalHand(hand) do
@@ -190,14 +192,6 @@ defmodule Poker do
     end
 
   end
-
-def sameSuit(hand) do
-  lst = for x <-hand, do: hd tl x
-  set = MapSet.new(lst)
-  len = String.length(Enum.join(set, ""))
-  len == 1
-  # takes in hand and returns true if values in the hand have the same suit
-end
 
   # Returns a hand in the form [[rank,suit],[rank,suit],etc]
   def transformHand(hand) do
@@ -213,22 +207,8 @@ end
       buildBestFlush([],best)
     else
     high=getHandHighRank(hand,hd hand)
-
     buildBestFlush(hand--[high], best++[high])
     end
-  end
-
-  def getSameSuit([],_suit,lst), do: lst-nil
-  def getSameSuit(hand,suit,lst)do
-    a = hd hand
-    IO.puts( hd tl a)
-
-    ans =
-     cond do
-      suit in a -> getSameSuit(hand-- [a],suit,lst ++ [a] )
-      suit not in a ->  getSameSuit(hand--[a],suit,lst)
-     end
-    ans
   end
 
   def specialInList([], _ele ,res), do: res
@@ -238,13 +218,9 @@ end
       cond do
       ele == hd a-> specialInList([], ele,true)
       ele != hd a -> specialInList(hand -- [a],ele,res)
-      end 
+      end
     ans
   end
-
-
-  # POKER METHODS  https://www.fgbradleys.com/et_poker.asp
-  #|> inspect(charlists: :as_lists)
 
   # 1. Royal flush, straight flush, flush, straight, high card - Deandra
 
@@ -276,27 +252,27 @@ end
 
   end
 
-  #straight ----------------------------------------------
+  # Straight ---------------------------------------------
 
   def straight(hand) do
     straights = Enum.chunk_every(hand,5,1, :discard) # chunk into fives
     checkSequence = for x <- straights, do: inSequence(x)
     build = Enum.reject(checkSequence, fn x -> x==false end)
-    
+
     #Checking for highest possible straight
     special = [1,10,11,12,13]
     specCheck = for x <- special, do: specialInList(hand,x,[])
     top = buildBestFlush(hand,[nil])
 
     #Normal check
-    norm = 
+    norm =
     cond do
-      Enum.count(build)==0 ->  highCard(hand)
-      Enum.count(build)==1 ->  [5,hd build]#|> inspect(charlists: :as_lists)
-      Enum.count(build)>1 -> [5, getMultipleRankStraight(build, hd build)] #|> inspect(charlists: :as_lists)
+      Enum.count(build)==0 ->  false
+      Enum.count(build)==1 ->  [5,hd build]
+      Enum.count(build)>1 -> [5, getMultipleRankStraight(build, hd build)]
     end
-    
-    if Enum.count(Enum.uniq(specCheck))==1 do
+
+    if Enum.count(Enum.uniq(specCheck))==1 and inSequence(top) do
       [5,top]
     else
       norm
@@ -304,15 +280,14 @@ end
   end
 
 
-  #  flush -----------------------------------------------
+  #  Flush -----------------------------------------------
   def flush(hand) do
-
     h = Enum.reject(hand, fn x -> "H" not in x end)
     d = Enum.reject(hand, fn x -> "D" not in x  end)
     c = Enum.reject(hand, fn x -> "C" not in x  end)
     s = Enum.reject(hand, fn x -> "S" not in x  end)
 
-    same =  [h]
+    same = [h]
     same = same ++ [d]
     same = same ++ [s]
     same = same ++ [c]
@@ -328,12 +303,10 @@ end
       flushes = buildBestFlush(build,[nil])
       [6,flushes]
      end
-
   end
 
-  # straight Flush ----------------------------------------
+  # Straight Flush ----------------------------------------
   def straightFlush(hand) do
-
     if straight(hand) && flush(hand) do
       sorted = Enum.sort(hand, &(tl(&1) == tl(&2)))
       checkflushes = Enum.chunk_by(sorted, fn x -> tl x end)
@@ -356,7 +329,7 @@ end
     end
   end
 
-  # high card --------------------------------------------
+  # High card --------------------------------------------
   def highCard(hand) do
     card = getHandHighRank(hand, hd(hand))
     [1,[card]]
@@ -392,15 +365,13 @@ end
       high in c1 and high in c2 -> tie_flush(hand1 --[c1],hand2 --[c2],og1,og2)
     end
     ans
-
   end
 
-  #------------------------------------------------------
+  #------------------------------------------------------------
 
   # 2. Four of a kind, Full house, Three of a kind, two pair, pair - Vanessa
 
-  #  Four of a kind--------------------------------------------
-
+  # Four of a kind---------------------------------------------
   def fourKind(hand) do
     # chunk cards based on rank and remove cards if the # of cards don't equal to 4
     lst = Enum.chunk_by(hand, fn x -> hd(x) end)
@@ -415,9 +386,7 @@ end
   end
 
   # Full house ------------------------------------------------
-
   def fullHouse(hand) do
-
     if threeKind(hand) && pair(hand) do
       [7, (hd(tl(threeKind(hand))) ++ hd((tl(pair(hand)))))]
     else
@@ -427,7 +396,6 @@ end
   end
 
   # Three of a kind--------------------------------------------
-
   def threeKind(hand) do
     # chunk cards based on rank and remove cards if the # of cards don't equal to 3
     lst = Enum.chunk_by(hand, fn x -> hd(x) end)
@@ -457,8 +425,7 @@ end
 
   end
 
-  # two pair --------------------------------------------------
-
+  # Two pair --------------------------------------------------
   def twoPair(hand) do
     lst = Enum.chunk_by(hand, fn x -> hd(x) end)
     lst2 = for x <- lst, do: x
@@ -475,13 +442,11 @@ end
       leftover = ((hand) -- a) -- b
       x = getHandHighRank(leftover, hd(leftover))
       [3, a ++ b, x]
-
     end
 
   end
 
-  # pair ------------------------------------------------------
-
+  # Pair ------------------------------------------------------
   def pair(hand) do
 
     lst = Enum.chunk_by(hand, fn x -> hd(x) end)
@@ -501,7 +466,6 @@ end
     end
 
   end
-
 
   #TIE CONDITIONS ----------------------------------------------
 
@@ -523,7 +487,6 @@ end
       else
         hand2
       end
-
     else
       x = getMultipleRankRecursive([(hd lst), (hd lst2)] , hd tl lst)
       if x == (hd lst) do
@@ -532,9 +495,7 @@ end
         hand2
       end
     end
-
   end
-
 
   # Three of a Kind Tie -----------------------------------------
   def tie_threeKind(hand1, leftover1, hand2, leftover2) do
@@ -547,7 +508,6 @@ end
         hand2
       end
     else
-
       x = getMultipleRankRecursive([(hand1), (hand2)] , hand1)
       if x == hand1 do
         hand1
@@ -559,9 +519,8 @@ end
   end
 
 
-  # # Two Pair Tie ------------------------------------------------
+  # Two Pair Tie ------------------------------------------------
   def tie_twoPair(hand1, leftover1, hand2, leftover2) do
-
     # if first pair is the same
     if hd(hd(hand1)) == hd(hd(hand2)) do
       x = Enum.drop_while(hand1, fn x -> hd(x) == hd(hd(hand1)) end)
@@ -600,9 +559,8 @@ end
 
   end
 
-  # # Pair Tie ----------------------------------------------------
+  # Pair Tie ----------------------------------------------------
   def tie_pair(hand1, leftover1, hand2, leftover2) do
-
     # if first pair is the same
     if hd(hd(hand1)) == hd(hd(hand2)) do
 
@@ -635,25 +593,20 @@ end
           else
             hand2
           end
-
         end
       # if highest elem in leftover are not the same --> return the high card between the 2
       else
-
         if getHandHighRank([[x] ++ [y]] , x) == x do
           hand1
         else
           hand2
         end
-
       end
 
     else
       getMultipleRankRecursive([(hand1), (hand2)] , hand1)
     end
   end
-
-
 
   #-------------------------------------------------------------
 
@@ -664,16 +617,12 @@ end
   def deal(cards) do
     hand1=[hd(cards),hd tl tl cards]
     hand2=[hd(tl(cards)), hd(tl(tl(tl(cards))))]
-
     indivHand1 = transformHand(Enum.sort(hand1))
     indivHand2 = transformHand(Enum.sort(hand2))
-
     cards = cards -- hand1
     cards = cards -- hand2
     hand1 = transformHand(Enum.sort(hand1 ++ cards))
     hand2 = transformHand(Enum.sort(hand2 ++ cards))
-    IO.inspect(hand1)
-    IO.inspect(hand2)
 
     player1 = findHand(hand1, indivHand1)
     player2 = findHand(hand2, indivHand2)
@@ -750,7 +699,6 @@ end
       end
 
     else
-
       cond do
         num == 9 ->
           tie_higherTopCard(x, y, x, y)
@@ -764,53 +712,7 @@ end
           tie_higherTopCard(x, y, x, y)
         num == 1 ->
           getHandHighRank([(hd x), (hd y)], (hd x))
-
       end
-
     end
-
   end
 end
-
-
-# TESTING TESTING TESTING
-# IO.puts("Test 1")
-# #lst = [ 38, 36, 37, 29, 24, 34, 31, 35, 16 ] #18
-# lst2 = [ 14, 43,  9, 12, 38, 47, 36, 37, 26 ] #16
-# #lst4=[ 37, 13, 38, 29, 24, 16, 31, 34, 35 ] #17 
-# #IO.puts(Poker.flush([[3, "D"], [5, "H"], [8, "H"], [9, "H"], [11, "D"], [11, "H"], [12, "H"]]))
-# #IO.puts(Poker.sameSuit([[1, "C"], [2, "C"], [3, "C"], [6, "C"], [8, "C"], [10, "C"],[11, "C"]]))
-# IO.puts("16 -----------------------------------------------")
-# IO.inspect(Poker.straight([[1, "D"], [8, "S"], [9, "C"], [10, "H"], [11, "H"], [12, "H"], [13,"D"]]))
-# IO.inspect(Poker.straight([[4, "S"], [8, "S"], [10, "H"], [11, "H"], [12, "C"], [12, "H"], [13, "D"]]))
-# IO.inspect(Poker.deal(lst2))
-# IO.puts("[10H, 11H 12H, 13D, 1D]<----WINNER")
-# IO.puts("Test 1")
-
-# lst = [ 38, 36, 37, 29, 24, 34, 31, 35, 16 ] #18
-lst2 = [9,8,7,6,5,4,3,2,1] #16
-# lst4=[ 37, 13, 38, 29, 24, 16, 31, 34, 35 ] #17
-#IO.puts(Poker.flush([[3, "D"], [5, "H"], [8, "H"], [9, "H"], [11, "D"], [11, "H"], [12, "H"]]))
-#IO.puts(Poker.sameSuit([[1, "C"], [2, "C"], [3, "C"], [6, "C"], [8, "C"], [10, "C"],[11, "C"]]))
-# IO.puts("18 -----------------------------------------------")
-# IO.inspect(Poker.flush([[3, "D"], [3, "H"], [5, "H"], [8, "H"], [9, "H"], [10, "H"], [11, "D"]]))
-# IO.inspect(Poker.flush([[3, "D"], [5, "H"], [8, "H"], [9, "H"], [11, "D"], [11, "H"], [12, "H"]]))
-# IO.inspect(Poker.deal(lst))
-# IO.puts("[[12, H], [11, H], [9, H], [8, H], [5, H]] <----WINNER")
-# IO.puts("17 -----------------------------------------------")
-# IO.inspect(Poker.flush([[3, "D"], [5, "H"], [8, "H"], [9, "H"], [11, "D"], [11, "H"], [12, "H"]]))
-# IO.inspect(Poker.flush([[3, "D"], [3, "H"], [5, "H"], [8, "H"], [9, "H"], [11, "D"], [13, "C"]]))
-# IO.inspect(Poker.deal(lst4))
-# IO.puts("[12H, 11H, 9H, 8H, 5H]<----WINNER")
-# IO.puts("16 -----------------------------------------------")
-# IO.inspect(Poker.straight([[1, "D"], [8, "S"], [9, "C"], [10, "H"], [11, "H"], [12, "H"], [13,"D"]]))
-# IO.inspect(Poker.straight([[4, "S"], [8, "S"], [10, "H"], [11, "H"], [12, "C"], [12, "H"], [13, "D"]]))
-# IO.inspect(Poker.deal(lst2))
-# IO.puts("[10H, 11H 12H, 13D, 1D]<----WINNER")
-IO.puts("1 -----------------------------------------------")
-IO.inspect(Poker.straight([[9, "D"], [7, "S"], [5, "C"], [4, "H"], [3, "H"], [2, "H"], [1,"D"]]))
-IO.inspect(Poker.straight([[8, "S"], [6, "S"], [5, "H"], [4, "H"], [3, "C"], [2, "H"], [1, "D"]]))
-IO.inspect(Poker.deal(lst2))
-# IO.inspect("Test 2")
-# lst =   [ 52, 30, 39, 17, 25, 12, 51, 41, 44 ]
-# IO.inspect(Poker.deal(lst))
