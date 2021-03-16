@@ -206,12 +206,6 @@ defmodule Poker do
   # Royal flush ------------------------------------------
   def royalFlush(hand) do
 
-
-    # IO.inspect(hand)
-    #     A Royal Flush. is also a Straight Flush.
-    # A Royal Flush is the Highest Straight Flush.
-    # A Royal Flush can be checked as follows: isStraight( PokerHand ) && isFlush( PokerHand ) && Highest card == Ace.
-
     opt1=[[10,"H"],[11,"H"],[12,"H"],[13,"H"],[1,"H"]]
     opt2=[[10,"C"],[11,"C"],[12,"C"],[13,"C"],[1,"C"]]
     opt3=[[10,"D"],[11,"D"],[12,"D"],[13,"D"],[1,"D"]]
@@ -222,7 +216,6 @@ defmodule Poker do
     count3 =Enum.count(Enum.reject((for x <- hand, do: x  in opt3), fn x -> x==false end))
     count4 =Enum.count(Enum.reject((for x <- hand, do: x  in opt4), fn x -> x==false end))
 
-    # IO.inspect(count1)
     ans = cond do
       count1==5 -> [10,opt1]
       count2==5 -> [10,opt2]
@@ -304,30 +297,18 @@ defmodule Poker do
   end
 
   #TIE CONDITIONS ----------------------------------------
-  def tie_higherTopCard([head|tail],[head2|tail2],og1,og2) do
-    IO.inspect(head)
-    IO.inspect(head2)
-    # IO.inspect(og1)
-    # IO.inspect(og2)
 
-    a = head
-    b = head2
+  def tie_higherTopCard(check1,check2,og1,og2) do
+    a = List.last(check1)
+    b =  List.last(check2)
     high = getHRInt([getHRMatrix(a),getHRMatrix(b)])
-    if high in a and high in b do
-      tie_higherTopCard(tail,tail2,og1,og2)
+    ans =
+    cond do
+      high in a ->og1
+      high in b ->og2
+      high in a and high in b ->  tie_higherTopCard(check1--[high],check2--[high],og1,og2)
     end
-
-    # res = cond do
-    #   high in a -> og1
-    #   high in b -> og2
-    # end
-    # res
-    if high in a do
-      og1 #|> inspect(charlists: :as_lists)
-    end
-    if high in b do
-      og2 #|> inspect(charlists: :as_lists)
-    end
+    ans
   end
 
 
@@ -600,25 +581,26 @@ defmodule Poker do
     hand1 = transformHand(Enum.sort(hand1 ++ cards))
     hand2 = transformHand(Enum.sort(hand2 ++ cards))
 
-    IO.inspect(hand1)
-    IO.inspect(hand2)
+    # IO.inspect(hand1)
+    # IO.inspect(hand2)
     player1 = findHand(hand1)
-    IO.inspect(player1)
+    # IO.inspect(player1)
     player2 = findHand(hand2)
-    IO.inspect(player2)
+    # IO.inspect(player2)
 
     res =
     cond do
       (hd player1) > (hd player2) ->
-        IO.puts("player 1 wins")
+        # IO.puts("player 1 wins")
         finalHand(hd tl player1)
 
       (hd player1) < (hd player2) ->
-        IO.puts("player 2 wins")
+        # IO.puts("player 2 wins")
         finalHand(hd tl player2)
 
       (hd player1) == (hd player2) ->
-        IO.puts("tie")
+        # IO.puts("tie")
+        # finalHand(breakTie(player1, player2))
         breakTie(player1, player2)
     end
     res
@@ -675,7 +657,6 @@ defmodule Poker do
       x1 = hd tl tl hand1
       y1 = hd tl tl hand2
 
-      res =
       cond do
         num == 4 ->
           tie_threeKind(x, x1, y, y1)
@@ -684,10 +665,9 @@ defmodule Poker do
         num == 2 ->
           tie_pair(x, x1, y, y1)
       end
-      res
 
     else
-      res =
+
       cond do
         num == 9 ->
           tie_higherTopCard(x, y, x, y)
@@ -699,9 +679,11 @@ defmodule Poker do
           tie_higherTopCard(x, y, x, y)
         num == 5 ->
           tie_higherTopCard(x, y, x, y)
-        num == 1 -> getHandHighRank([x, y], x)
+        num == 1 ->
+          IO.inspect()
+          # getHandHighRank([x, y], x)
       end
-      res
+
     end
 
   end
@@ -741,7 +723,7 @@ end
 
 # TESTING TESTING TESTING
 IO.inspect("Test 1")
-lst =   [ 9,  8,  7,  6,  5,  4,  3,  2,  1  ]
+lst =   [ 13, 38,  3, 28,  1, 23, 47,  6, 18 ]
 IO.inspect(Poker.deal(lst))
 
 # IO.inspect("Test 2")
