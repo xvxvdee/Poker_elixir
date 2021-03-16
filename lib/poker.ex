@@ -176,9 +176,18 @@ defmodule Poker do
 
   # Returns final hand in correct format
   def finalHand(hand) do
+    # IO.inspect(hand)
     setup = for n <- hand, do: "#{to_string(checkNum(hd n))}#{hd tl n}"
     setup #|> inspect(charlists: :as_lists)
   end
+
+def sameSuit(hand) do
+  lst = for x <-hand, do: hd tl x 
+  set = MapSet.new(lst)
+  len = String.length(Enum.join(set, ""))
+  len == 1
+  # takes in hand and returns true if values in the hand have the same suit
+end
 
   # Returns a hand in the form [[rank,suit],[rank,suit],etc]
   def transformHand(hand) do
@@ -188,15 +197,17 @@ defmodule Poker do
   end
 
   # Builds best flush out of a hand
-  def bestFlush([],best), do: best --[nil]
-  def bestFlush(hand,best) do
+  def buildBestFlush([],best), do: best --[nil] |> inspect(charlists: :as_lists)
+  def buildBestFlush(hand,best) do
     if Enum.count(best)==6 do
-      bestFlush([],best)
+      buildBestFlush([],best)
     else
     high=getHandHighRank(hand,hd hand)
-    bestFlush(hand--[high], best++[high])
+    buildBestFlush(hand--[high], best++[high])
     end
   end
+
+  
 
   # POKER METHODS  https://www.fgbradleys.com/et_poker.asp
   #|> inspect(charlists: :as_lists)
@@ -250,17 +261,14 @@ defmodule Poker do
   #  flush -----------------------------------------------
   def flush(hand) do
     sorted = Enum.sort(hand, &(tl(&1) == tl(&2)))
-    checkflushes = Enum.chunk_by(sorted, fn x -> tl x end)
-    build = Enum.reject(checkflushes, fn x -> Enum.count(x)<5 end)
-    flushes= for x <- build, do: bestFlush(x,[nil])
-
-    ans =
-    cond do
-      Enum.count(build)==0 ->  false
-      Enum.count(build)==1 ->[6, hd flushes] #|> inspect(charlists: :as_lists)
-      Enum.count(build)>1 -> [6, getMultipleRankRecursive(flushes, hd flushes)]#|> inspect(charlists: :as_lists)
+    if sameSuit(hand)==false do
+      false
+    else
+      checkflushes = for x <- sorted, do: Enum.sort(x)
+      flushes = buildBestFlush(checkflushes,[nil])
+      IO.inspect(flushes)
+      [6,flushes]
     end
-    ans # |> inspect(charlists: :as_lists)
   end
 
   # straight Flush ----------------------------------------
@@ -311,6 +319,21 @@ defmodule Poker do
     ans
   end
 
+  def tie_flush(hand1,hand2,og1,og2) do
+    c1 = highCard(hand1)
+    c2 = highCard(hand2)
+    a= hd c1
+    b = hd c2
+    high=getHRInt([a,b])
+    ans =
+    cond do
+      high in c1 -> og1
+      high in c1 -> og2
+      high in c1 and high in c2 -> tie_flush(hand1 --[c1],hand2 --[c2],og1,og2)
+    end
+    ans
+
+  end
 
   #------------------------------------------------------
 
@@ -676,11 +699,11 @@ defmodule Poker do
         num == 7 ->
           tie_fullHouse(x, y)
         num == 6 ->
-          tie_higherTopCard(x, y, x, y)
+          tie_flush(x, y, x, y)
         num == 5 ->
           tie_higherTopCard(x, y, x, y)
         num == 1 ->
-          IO.inspect()
+          # IO.inspect()
           # getHandHighRank([x, y], x)
       end
 
@@ -689,7 +712,10 @@ defmodule Poker do
   end
 end
 
-
+# IO.puts(Poker.tie_flush([[[1, "C"], [2, "C"], [3, "C"], [6, "C"], [8, "C"], [10, "C"], [11, "C"]],
+# [[1, "C"], [2, "C"], [3, "C"], [6, "C"], [8, "C"], [10, "C"], [11, "C"]],
+# [[2, "C"], [3, "C"], [7, "C"], [8, "C"], [10, "C"], [11, "C"], [13, "C"]],
+# [[2, "C"], [3, "C"], [7, "C"], [8, "C"], [10, "C"], [11, "C"], [13, "C"]]],[[1, "C"], [2, "C"], [3, "C"], [6, "C"], [8, "C"], [10, "C"], [11, "C"]] ))
 # IO.puts(Poker.higherTopCard([[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]],[[3, "C"], [4, "C"], [5, "C"], [6, "C"], [7, "C"]],  [[2, "C"], [3, "C"], [4, "C"], [5, "C"], [6, "C"]], [[3, "C"], [4, "C"], [5, "C"], [6, "C"], [7, "C"]]  ))
 # IO.puts(Poker.royalFlush(hd Poker.deal([ 40, 41, 42, 43, 48, 49, 50, 51, 52 ])))
 # IO.puts(Poker.royalFlush(hd tl Poker.deal([ 40, 41, 42, 43, 48, 49, 50, 51, 52 ])))
@@ -722,10 +748,13 @@ end
 # IO.inspect(Poker.tie_fullHouse(x, y))
 
 # TESTING TESTING TESTING
-IO.inspect("Test 1")
-lst =   [ 13, 38,  3, 28,  1, 23, 47,  6, 18 ]
-IO.inspect(Poker.deal(lst))
+IO.puts("Test 1")
+lst =    [ 13, 38,  3, 28,  1, 23, 47,  6, 18 ]
+#IO.inspect(Poker.flush([[1, "C"], [2, "C"], [3, "C"], [6, "C"], [8, "C"], [10, "C"],[11, "C"]]))
+#IO.puts(Poker.sameSuit([[1, "C"], [2, "C"], [3, "C"], [6, "C"], [8, "C"], [10, "C"],[11, "C"]]))
 
+#IO.puts(Poker.tie_flush([[1, "C"], [11, "C"], [10, "C"], [8, "C"], [6, "C"]],[[13, "C"], [11, "C"], [10, "C"], [8, "C"], [7, "C"]] ,[[1, "C"], [11, "C"], [10, "C"], [8, "C"], [6, "C"]],[[13, "C"], [11, "C"], [10, "C"], [8, "C"], [7, "C"]]))
+IO.inspect(Poker.deal(lst))
 # IO.inspect("Test 2")
 # lst =   [ 52, 30, 39, 17, 25, 12, 51, 41, 44 ]
 # IO.inspect(Poker.deal(lst))
