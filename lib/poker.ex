@@ -231,12 +231,13 @@ end
     ans
   end
 
-  def addOne(hand,one) do
-    #IO.inspect(Enum.member?(hand,hd one))
+  def specialInList([], _ele ,res), do: res
+  def specialInList(hand,ele,res) do
+    a = hd hand
     ans =
       cond do
-      Enum.member?(hand,hd one)==true -> hand   
-      Enum.member?(hand,hd one)==false-> hand ++ [hd one]
+      ele == hd a-> specialInList([], ele,true)
+      ele != hd a -> specialInList(hand -- [a],ele,res)
       end 
     ans
   end
@@ -277,31 +278,29 @@ end
 
   #straight ----------------------------------------------
 
- 
-
   def straight(hand) do
-    hand =Enum.sort(hand)
     straights = Enum.chunk_every(hand,5,1, :discard) # chunk into fives
-    ones = Enum.reject(hand, fn x -> 1 not in x end)
-    straightsUp = 
-      cond do
-      Enum.count(ones)==1 ->  for x <-straights, do: addOne(x,ones)
-      Enum.count(ones)!=1 ->  straights
-      end
- 
-    checkSequence = for x <- straightsUp, do: inSequence(x)
+    checkSequence = for x <- straights, do: inSequence(x)
     build = Enum.reject(checkSequence, fn x -> x==false end)
-    # IO.puts(build|> inspect(charlists: :as_lists))
-    # IO.puts(checkSequence|> inspect(charlists: :as_lists))
+    
+    #Checking for highest possible straight
+    special = [1,10,11,12,13]
+    specCheck = for x <- special, do: specialInList(hand,x,[])
+    top = buildBestFlush(hand,[nil])
 
-    ans =
+    #Normal check
+    norm = 
     cond do
-      Enum.count(build)==0 ->  false#|> inspect(charlists: :as_lists)
+      Enum.count(build)==0 ->  highCard(hand)
       Enum.count(build)==1 ->  [5,hd build]#|> inspect(charlists: :as_lists)
-      Enum.count(build)>1 -> [5, buildBestFlush(build, hd build)] #|> inspect(charlists: :as_lists)
-
+      Enum.count(build)>1 -> [5, getMultipleRankStraight(build, hd build)] #|> inspect(charlists: :as_lists)
     end
-    ans
+    
+    if Enum.count(Enum.uniq(specCheck))==1 do
+      [5,top]
+    else
+      norm
+    end
   end
 
 
@@ -673,6 +672,8 @@ end
     cards = cards -- hand2
     hand1 = transformHand(Enum.sort(hand1 ++ cards))
     hand2 = transformHand(Enum.sort(hand2 ++ cards))
+    IO.inspect(hand1)
+    IO.inspect(hand2)
 
     player1 = findHand(hand1, indivHand1)
     player2 = findHand(hand2, indivHand2)
@@ -785,8 +786,9 @@ end
 # IO.inspect(Poker.deal(lst2))
 # IO.puts("[10H, 11H 12H, 13D, 1D]<----WINNER")
 # IO.puts("Test 1")
+
 # lst = [ 38, 36, 37, 29, 24, 34, 31, 35, 16 ] #18
-# lst2 = [ 14, 43,  9, 12, 38, 47, 36, 37, 26 ] #16
+lst2 = [9,8,7,6,5,4,3,2,1] #16
 # lst4=[ 37, 13, 38, 29, 24, 16, 31, 34, 35 ] #17
 #IO.puts(Poker.flush([[3, "D"], [5, "H"], [8, "H"], [9, "H"], [11, "D"], [11, "H"], [12, "H"]]))
 #IO.puts(Poker.sameSuit([[1, "C"], [2, "C"], [3, "C"], [6, "C"], [8, "C"], [10, "C"],[11, "C"]]))
@@ -805,6 +807,10 @@ end
 # IO.inspect(Poker.straight([[4, "S"], [8, "S"], [10, "H"], [11, "H"], [12, "C"], [12, "H"], [13, "D"]]))
 # IO.inspect(Poker.deal(lst2))
 # IO.puts("[10H, 11H 12H, 13D, 1D]<----WINNER")
+IO.puts("1 -----------------------------------------------")
+IO.inspect(Poker.straight([[9, "D"], [7, "S"], [5, "C"], [4, "H"], [3, "H"], [2, "H"], [1,"D"]]))
+IO.inspect(Poker.straight([[8, "S"], [6, "S"], [5, "H"], [4, "H"], [3, "C"], [2, "H"], [1, "D"]]))
+IO.inspect(Poker.deal(lst2))
 # IO.inspect("Test 2")
 # lst =   [ 52, 30, 39, 17, 25, 12, 51, 41, 44 ]
 # IO.inspect(Poker.deal(lst))
