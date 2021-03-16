@@ -208,6 +208,23 @@ end
     end
   end
 
+  def getSameSuit([],_suit,lst), do: lst-nil
+  def getSameSuit(hand,suit,lst)do
+    a = hd hand
+    IO.puts( hd tl a)
+  
+    ans = 
+     cond do
+      suit in a -> getSameSuit(hand-- [a],suit,lst ++ [a] )
+      suit not in a ->  getSameSuit(hand--[a],suit,lst)
+     end
+    ans
+    # if hd tl a == suit do
+    #   getSameSuit(hand--[a],suit,lst++[a])
+    # else
+    #   getSameSuit(hand--[a],suit,lst)
+    # end
+  end
   
 
   # POKER METHODS  https://www.fgbradleys.com/et_poker.asp
@@ -259,16 +276,31 @@ end
     ans#|> inspect(charlists: :as_lists)
   end
 
+
   #  flush -----------------------------------------------
   def flush(hand) do
-    sorted = Enum.sort(hand, &(tl(&1) == tl(&2)))
-    if sameSuit(hand)==false do
+
+    h = Enum.reject(hand, fn x -> "H" not in x end)
+    d = Enum.reject(hand, fn x -> "D" not in x  end)
+    c = Enum.reject(hand, fn x -> "C" not in x  end)
+    s = Enum.reject(hand, fn x -> "S" not in x  end)
+
+    same =  [h]
+    same = same ++ [d]
+    same = same ++ [s]
+    same = same ++ [c]
+
+    same = Enum.reject(same, fn x -> Enum.count(x)<5 end)
+    
+    if Enum.empty?(same)==true do
       false
     else
-      checkflushes = for x <- sorted, do: Enum.sort(x)
-      flushes = buildBestFlush(checkflushes,[nil])
+      same = List.flatten(same)
+      build= Enum.chunk_every(same,2,2, :discard)
+      build=Enum.sort(build)
+      flushes = buildBestFlush(build,[nil])
       [6,flushes]
-    end
+     end
   
   end
 
@@ -607,8 +639,8 @@ end
     hand1 = transformHand(Enum.sort(hand1 ++ cards))
     hand2 = transformHand(Enum.sort(hand2 ++ cards))
 
-    # IO.inspect(hand1)
-    # IO.inspect(hand2)
+    IO.inspect(hand1)
+    IO.inspect(hand2)
     player1 = findHand(hand1)
     # IO.inspect(player1)
     player2 = findHand(hand2)
@@ -752,12 +784,22 @@ end
 
 # TESTING TESTING TESTING
 IO.puts("Test 1")
-lst = [ 38, 36, 37, 29, 24, 34, 31, 35, 16 ]
-#IO.inspect(Poker.flush([[1, "C"], [2, "C"], [3, "C"], [6, "C"], [8, "C"], [10, "C"],[11, "C"]]))
+lst = [ 38, 36, 37, 29, 24, 34, 31, 35, 16 ] #18
+lst2 = [ 14, 43,  9, 12, 38, 47, 36, 37, 26 ] #16
+lst4=[ 37, 13, 38, 29, 24, 16, 31, 34, 35 ] #17 
+#IO.puts(Poker.flush([[3, "D"], [5, "H"], [8, "H"], [9, "H"], [11, "D"], [11, "H"], [12, "H"]]))
 #IO.puts(Poker.sameSuit([[1, "C"], [2, "C"], [3, "C"], [6, "C"], [8, "C"], [10, "C"],[11, "C"]]))
-
-# IO.puts(Poker.tie_flush([[1, "C"], [11, "C"], [10, "C"], [8, "C"], [6, "C"]],[[13, "C"], [11, "C"], [10, "C"], [8, "C"], [7, "C"]] ,[[1, "C"], [11, "C"], [10, "C"], [8, "C"], [6, "C"]],[[13, "C"], [11, "C"], [10, "C"], [8, "C"], [7, "C"]]))
+IO.puts("18 -----------------------------------------------")
+IO.inspect(Poker.flush([[3, "D"], [3, "H"], [5, "H"], [8, "H"], [9, "H"], [10, "H"], [11, "D"]]))
+IO.inspect(Poker.flush([[3, "D"], [5, "H"], [8, "H"], [9, "H"], [11, "D"], [11, "H"], [12, "H"]]))
 IO.inspect(Poker.deal(lst))
+IO.puts("[[12, H], [11, H], [9, H], [8, H], [5, H]] <----WINNER")
+IO.puts("17 -----------------------------------------------")
+IO.inspect(Poker.flush([[3, "D"], [5, "H"], [8, "H"], [9, "H"], [11, "D"], [11, "H"], [12, "H"]]))
+IO.inspect(Poker.flush([[3, "D"], [3, "H"], [5, "H"], [8, "H"], [9, "H"], [11, "D"], [13, "C"]]))
+IO.inspect(Poker.deal(lst4))
+IO.puts("[12H, 11H, 9H, 8H, 5H]<----WINNER")
+
 # IO.inspect("Test 2")
 # lst =   [ 52, 30, 39, 17, 25, 12, 51, 41, 44 ]
 # IO.inspect(Poker.deal(lst))
