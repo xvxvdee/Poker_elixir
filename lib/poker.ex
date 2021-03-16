@@ -588,39 +588,28 @@ defmodule Poker do
   # deal --------------------------------------------------------
   # returns two hands [hand1,hand2]
   def deal(cards) do
-    # cards = cards
     hand1=[hd(cards),hd tl tl cards]
     hand2=[hd(tl(cards)), hd(tl(tl(tl(cards))))]
     indivHand1 = transformHand(Enum.sort(hand1))
     indivHand2 = transformHand(Enum.sort(hand2))
-    # IO.inspect(indivHand1)
-    # IO.inspect(indivHand2)
     cards = cards -- hand1
     cards = cards -- hand2
     hand1 = transformHand(Enum.sort(hand1 ++ cards))
     hand2 = transformHand(Enum.sort(hand2 ++ cards))
 
-    # IO.inspect(hand1)
-    # IO.inspect(hand2)
     player1 = findHand(hand1, indivHand1)
-    # IO.inspect(player1)
     player2 = findHand(hand2, indivHand2)
-    # IO.inspect(player2)
 
     res =
     cond do
       (hd player1) > (hd player2) ->
-        # IO.puts("player 1 wins")
         finalHand(hd tl player1)
 
       (hd player1) < (hd player2) ->
-        # IO.puts("player 2 wins")
         finalHand(hd tl player2)
 
       (hd player1) == (hd player2) ->
-        # IO.puts("tie")
         finalHand(breakTie(player1, player2))
-        # breakTie(player1, player2)
     end
     res
     # [hand1,hand2]
@@ -669,9 +658,6 @@ defmodule Poker do
     num = hd hand1
     x = hd tl hand1
     y = hd tl hand2
-    # IO.inspect(x)
-    # IO.inspect(y)
-    # IO.inspect(num)
 
     if num == 4 || num == 3 || num == 2 do
       x1 = hd tl tl hand1
@@ -700,8 +686,6 @@ defmodule Poker do
         num == 5 ->
           tie_higherTopCard(x, y, x, y)
         num == 1 ->
-
-          # IO.inspect(getHandHighRank([x, y], x))
           getHandHighRank([(hd x), (hd y)], (hd x))
       end
 
